@@ -1,2 +1,2 @@
-# hackathon-pinasiklab-parZval
-The official repository for Team parZvalin the PinaSiklab Hackathon.
+# Our First Hackathon!
+The official repository for Team parZval in the PinaSiklab Hackathon.
