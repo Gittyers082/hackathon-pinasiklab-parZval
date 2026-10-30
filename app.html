@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>KitaKlaro</title>
 <meta name="description" content="Talaan ng benta, stock at utang para sa sari-sari store.">
-<meta name="theme-color" content="#F2F1EE">
-<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F3F4F6">
+<meta name="color-scheme" content="light">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="KitaKlaro">
@@ -37,26 +37,29 @@
   </div>
 </div>
 
+<!-- One nav for both layouts: a bottom tab bar on a phone, a left rail from
+     900px up. CSS does the flip; js/app.js only marks the current tab. -->
 <nav class="tabbar" aria-label="Mga screen">
+  <p class="tabbar__mark mark" aria-hidden="true">Kita<b>Klaro</b></p>
   <a class="tab" href="#kita" data-tab="kita">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
-    <span>Kita</span>
+    <span class="tab__label">Kita</span>
   </a>
   <a class="tab" href="#benta" data-tab="benta">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18l-2 12H5L3 6zm4 0a5 5 0 0 1 10 0"/></svg>
-    <span>Benta</span>
+    <span class="tab__label">Benta</span>
   </a>
   <a class="tab" href="#stock" data-tab="stock">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM4 7l2-3h12l2 3M9 11h6"/></svg>
-    <span>Stock</span>
+    <span class="tab__label">Stock</span>
   </a>
   <a class="tab" href="#utang" data-tab="utang">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v10H3zM3 11h18M7 15h4"/></svg>
-    <span>Utang</span>
+    <span class="tab__label">Utang</span>
   </a>
   <a class="tab" href="#ulat" data-tab="ulat">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h4"/></svg>
-    <span>Ulat</span>
+    <span class="tab__label">Ulat</span>
   </a>
 </nav>
 

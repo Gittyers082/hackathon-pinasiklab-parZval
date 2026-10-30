@@ -13,8 +13,8 @@
     "browser"
   ],
   "orientation": "portrait",
-  "background_color": "#F4F6F5",
-  "theme_color": "#0B6E4F",
+  "background_color": "#F3F4F6",
+  "theme_color": "#F3F4F6",
   "categories": [
     "business",
     "finance",

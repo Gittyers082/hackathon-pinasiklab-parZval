@@ -1,45 +1,71 @@
 /* ==========================================================================
    KitaKlaro — design tokens
    Colours sampled from the KitaKlaro mark, then assigned by meaning.
-   Rule: colour lands on data, never on chrome. Target ~3-5% coloured pixels.
+   Rule: colour lands on data, never on chrome. The one exception is the
+   active navigation item — a shopkeeper mid-rush has to know where she is
+   without stopping to read — so that single element earns a filled surface.
+   Light only, by decision: the stall is bright and the audience is older.
    Baseline: Chrome 90 / Android Go. No oklch, color-mix, :has or @container.
+   Every colour that carries meaning is measured against the surface it
+   actually sits on, and the ratio is written beside it.
    ========================================================================== */
 
 :root {
+  color-scheme: light;
+
+  /* --- primitives: the app's two hues -------------------------------------
+     Navy carries structure and the lead number. Sunflower is a FIELD only:
+     it is 1.9:1 on white, so it can never be text, a rule, or a standalone
+     indicator on a light ground — only a surface with dark ink on it. */
+  --navy:          #11306B;  /* 12.6:1 on white */
+  --navy-deep:     #0A1F47;  /* pressed, and borders on navy fills */
+  --navy-soft:     #E7ECF6;  /* tinted ground */
+  --sunflower:     #F2B01E;
+  --sunflower-ink: #2A1D06;  /* 8.6:1 on sunflower */
+
+  /* --- the mark's own colours ---------------------------------------------
+     Unchanged. The wordmark is drawn in these, and css/landing.css borrows
+     them for a page that is out of scope. Do not retone them here. */
+  --oxblood:      #5A1216;   /* 7.2:1 on sunflower, 13.7:1 on white */
+  --oxblood-soft: #F3E7E6;
+  --gold:         #FDC33C;
+  --gold-ink:     #2A1D06;
+  --periwinkle:   #574BA0;   /* 7.2:1 on white */
+  --blue:         #226298;   /* marketing page only; the app links are navy */
+
   /* --- ground & ink -------------------------------------------------------
-     Deliberately NOT cream (#FAF5EC). A yellow-cream ground paired with a
-     terracotta accent is the most generated look of 2025-26; the stone
-     below keeps the warmth at a fraction of the chroma. */
-  --ground:        #F2F1EE;
-  --surface:       #FFFFFF;
-  --surface-sunk:  #EAE8E3;
-  --line:          #E0DDD6;
-  --line-strong:   #CBC6BC;
+     Cooled a half-step off the old stone so navy sits on it without a warm
+     ground fighting a cool hue. The muted and faint inks both clear 4.5:1
+     now, which is what lets row meta carry real information. */
+  --ground:       #F3F4F6;
+  --surface:      #FFFFFF;
+  --surface-sunk: #E4E7EC;
+  --line:         #D5D9E0;
+  --line-strong:  #848D9E;   /* 3.3:1 on white and 3.0:1 on the ground. This
+                                is the control-boundary token, so it has to
+                                clear 3:1 on BOTH surfaces a button sits on;
+                                the old #AEB5C0 was 2.1:1 and did not. */
+  --ink:          #101828;   /* 17.8:1 */
+  --ink-muted:    #475467;   /* 7.7:1 */
+  --ink-faint:    #667085;   /* 5.0:1 */
 
-  --ink:           #191417;
-  --ink-muted:     #6B6560;
-  --ink-faint:     #938C85;
-
-  /* --- brand hues, straight off the mark --------------------------------- */
-  --oxblood:        #5A1216;  /* badge — brand hue, reserved for the lead number */
-  --oxblood-soft:   #F3E7E6;
-  /* The lead number's hue is its own token: oxblood cannot survive being
-     lightened for a dark ground without turning pastel pink, so on dark it
-     steps back to ink and the deltas carry the colour instead. */
-  --lead-hue:       var(--oxblood);
-  --periwinkle:     #685CA8;  /* the mark's unused colour; secondary data */
-  --periwinkle-soft:#ECEAF5;
-  --green:          #0B764F;  /* benta, money in */
-  --green-soft:     #E3F0EA;
-  --vermilion:      #D8431F;  /* paubos only — never decoration */
-  --vermilion-soft: #FBE7E1;
-  --amber:          #C97F07;  /* low stock; darkened to hold AA on white */
-  --amber-soft:     #FBEFD6;
-  --blue:           #226298;
-  /* The mark's gold, used as a full field behind the one number that
-     matters. One field per screen — if everything is loud, nothing is. */
-  --gold:           #FDC33C;
-  --gold-ink:       #2A1D06;
+  /* --- semantic roles: what the colour MEANS ------------------------------
+     Components reference these and never the primitives above, so a rehue is
+     one block of work instead of a search across the file. */
+  --accent:        var(--navy);
+  --accent-on:     #FFFFFF;
+  --accent-soft:   var(--navy-soft);
+  --field:         var(--sunflower);   /* one loud surface per screen */
+  --field-ink:     var(--sunflower-ink);
+  --lead-hue:      var(--accent);      /* the number the screen exists for */
+  --money-in:      #0A5C3E;  /* 8.0:1 — benta */
+  --money-in-soft: #E3F0EA;
+  --utang:         var(--periwinkle);
+  --utang-soft:    #ECEAF5;
+  --warn:          #8A5200;  /* 6.4:1 — low stock, and it is set as TEXT */
+  --warn-soft:     #FBEFD6;
+  --danger:        #A3260B;  /* 7.4:1 — paubos */
+  --danger-soft:   #FBE7E1;
 
   /* --- type ---------------------------------------------------------------
      Both faces are named first and fall back to what the device has. Neither
@@ -51,11 +77,14 @@
                   Georgia, "Times New Roman", serif;
   --face-ui: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, system-ui, sans-serif;
 
-  /* Four steps, far apart. A graded 16/18/20/24/28 scale reads as mush. */
-  --t-lead:  2.75rem;   /* 44px — the one number the screen exists to answer */
-  --t-title: 1.25rem;   /* 20px */
-  --t-body:  1rem;      /* 16px */
-  --t-small: 0.8125rem; /* 13px */
+  /* Four steps, far apart. A graded 16/18/20/24/28 scale reads as mush.
+     Every step moved up one notch for older eyes, and nothing that carries
+     meaning is allowed below --t-small. */
+  --t-lead:  3rem;        /* 48px — the one number the screen answers */
+  --t-title: 1.375rem;    /* 22px */
+  --t-body:  1.0625rem;   /* 17px */
+  --t-small: 0.9375rem;   /* 15px — smallest size that may mean something */
+  --t-micro: 0.8125rem;   /* 13px — units and timestamps only */
 
   --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;
   --sp-4: 16px; --sp-5: 24px; --sp-6: 32px;
@@ -64,34 +93,11 @@
   --radius-sm: 8px;
   --radius-field: 28px; /* the big sweep under a colour field */
   --radius-pill: 999px;
-  --tap: 48px;          /* minimum touch target */
-}
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --ground: #17141A; --surface: #211D24; --surface-sunk: #2C2732;
-    --line: #342E3A; --line-strong: #4A4252;
-    --ink: #F3F0EE; --ink-muted: #ADA4AE; --ink-faint: #837A86;
-    --oxblood: #D98D93; --oxblood-soft: #38191D;
-    --lead-hue: var(--ink);
-    --periwinkle: #A99CE6; --periwinkle-soft: #272244;
-    --green: #4FC093; --green-soft: #12301F;
-    --vermilion: #FF8F6B; --vermilion-soft: #3B1A14;
-    --amber: #F0B544; --amber-soft: #352611;
-    --blue: #7FB6E8;
-  }
-}
-:root[data-theme="dark"] {
-  --ground: #17141A; --surface: #211D24; --surface-sunk: #2C2732;
-  --line: #342E3A; --line-strong: #4A4252;
-  --ink: #F3F0EE; --ink-muted: #ADA4AE; --ink-faint: #837A86;
-  --oxblood: #D98D93; --oxblood-soft: #38191D;
-  --lead-hue: var(--ink);
-  --periwinkle: #A99CE6; --periwinkle-soft: #272244;
-  --green: #4FC093; --green-soft: #12301F;
-  --vermilion: #FF8F6B; --vermilion-soft: #3B1A14;
-  --amber: #F0B544; --amber-soft: #352611;
-  --blue: #7FB6E8;
+  --tap: 48px;          /* minimum touch target */
+  --nav-h: 68px;        /* bottom bar: 26px icon + a 15px label + padding */
+  --rail-w: 104px;      /* the same nav, stood up on the left edge */
+  --measure: 760px;     /* content width once the rail takes that edge */
 }
 
 /* ==========================================================================
@@ -110,7 +116,7 @@ body {
   font-size: var(--t-body);
   line-height: 1.45;
   /* room for the fixed tab bar + the gesture area on tall Androids */
-  padding-bottom: calc(var(--tap) + 28px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(var(--nav-h) + var(--sp-3) + env(safe-area-inset-bottom, 0px));
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -121,13 +127,29 @@ dl, dd { margin: 0; }
 
 button { font: inherit; color: inherit; }
 
-:focus-visible { outline: 3px solid var(--periwinkle); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+/* Navy on navy is no ring at all, so filled controls borrow the field. */
+.tab[aria-current="page"]:focus-visible,
+.btn--primary:focus-visible,
+.segmented__opt.is-on:focus-visible { outline-color: var(--field); }
 
 .skip {
   position: absolute; left: -9999px; top: 0;
   background: var(--ink); color: var(--surface); padding: var(--sp-3);
 }
 .skip:focus { left: 0; z-index: 60; }
+
+/* The surfaces we did not draw still belong to the palette. */
+html { scrollbar-color: var(--line-strong) transparent; scrollbar-width: thin; }
+::selection { background: var(--field); color: var(--field-ink); }
+input, textarea, select { caret-color: var(--accent); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 2px solid var(--ground);
+  border-radius: var(--radius-pill);
+}
 
 .muted { color: var(--ink-muted); }
 .pad { padding: var(--sp-4); }
@@ -157,21 +179,16 @@ button { font: inherit; color: inherit; }
    -------------------------------------------------------------------------- */
 
 .field-head {
-  background: var(--gold);
-  color: var(--gold-ink);
+  background: var(--field);
+  color: var(--field-ink);
   border-radius: 0 0 var(--radius-field) var(--radius-field);
   padding: calc(env(safe-area-inset-top, 0px) + var(--sp-4)) var(--sp-4) var(--sp-5);
-  /* The field stays gold in dark mode, so the tokens drawn on it are pinned
-     to their light values here. Letting --oxblood lighten put the lead
-     number at 1.6:1 against the gold. */
-  --oxblood: #5A1216;
-  --lead-hue: #5A1216;
 }
 .field-head__top {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--sp-3); margin-bottom: var(--sp-5);
 }
-.field-head .mark b { color: #7A2E12; }
+.field-head .mark b { color: var(--oxblood); }
 /* The greeting and the shop name are separate elements: nesting a UI-face
    span inside the display-face heading reads as a typeface switch mid-line. */
 .field-head__hello {
@@ -183,7 +200,7 @@ button { font: inherit; color: inherit; }
 }
 .field-head .lead { padding: var(--sp-5) 0 0; }
 .field-head .lead__label { color: rgba(42, 29, 6, 0.68); }
-.field-head .lead__value { color: var(--oxblood); }
+.field-head .lead__value { color: var(--accent); }
 .field-head .lead__delta { color: rgba(42, 29, 6, 0.78); }
 .field-head .up { color: #0A5C3E; }
 .field-head .down { color: #A3260B; }
@@ -192,7 +209,7 @@ button { font: inherit; color: inherit; }
 .field-head .figures dt { color: rgba(42, 29, 6, 0.68); }
 
 /* the chip sits on gold here, so it needs its own ground */
-.field-head .chip { background: rgba(42, 29, 6, 0.12); color: var(--gold-ink); }
+.field-head .chip { background: rgba(42, 29, 6, 0.12); color: var(--field-ink); }
 .field-head .chip--live { background: rgba(10, 92, 62, 0.14); color: #0A5C3E; }
 
 /* --------------------------------------------------------------------------
@@ -215,9 +232,9 @@ button { font: inherit; color: inherit; }
   display: flex; align-items: center; justify-content: center;
   background: var(--surface); border: 1px solid var(--line);
 }
-.quick__icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.75; }
-.quick__item--go .quick__icon { background: var(--ink); border-color: var(--ink); color: var(--ground); }
-.quick__item:active .quick__icon { background: var(--surface-sunk); }
+.quick__icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; }
+.quick__item--go .quick__icon { background: var(--accent); border-color: var(--accent); color: var(--accent-on); }
+.quick__item:active .quick__icon { background: var(--accent-soft); border-color: var(--accent); }
 .appbar__top {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--sp-3);
@@ -242,8 +259,8 @@ button { font: inherit; color: inherit; }
   font-size: var(--t-small); font-weight: 600;
   background: var(--surface-sunk); color: var(--ink-muted);
 }
-.chip--offline { background: var(--amber-soft); color: var(--amber); }
-.chip--live    { background: var(--green-soft); color: var(--green); }
+.chip--offline { background: var(--warn-soft); color: var(--warn); }
+.chip--live    { background: var(--money-in-soft); color: var(--money-in); }
 
 /* ==========================================================================
    the lead answer — "magkano ang kita ko ngayon?"
@@ -266,8 +283,8 @@ button { font: inherit; color: inherit; }
 }
 .lead__delta { margin-top: var(--sp-2); font-size: var(--t-small); }
 .lead__delta b { font-weight: 600; }
-.up   { color: var(--green); }
-.down { color: var(--vermilion); }
+.up   { color: var(--money-in); }
+.down { color: var(--danger); }
 
 /* Two figures under the lead. Rules and alignment, no tiles. */
 .figures {
@@ -290,7 +307,10 @@ button { font: inherit; color: inherit; }
   gap: var(--sp-3); padding: 0 var(--sp-4) var(--sp-2);
 }
 .section__head h2 { font-size: var(--t-title); letter-spacing: -0.01em; }
-.section__head a { font-size: var(--t-small); color: var(--blue); }
+.section__head a {
+  font-size: var(--t-small); font-weight: 600;
+  color: var(--accent); text-underline-offset: 3px;
+}
 
 .card {
   background: var(--surface);
@@ -324,14 +344,14 @@ button { font: inherit; color: inherit; }
 /* Stock states. The band of colour IS the warning, so nothing decorative
    on this screen is allowed to use amber or vermilion. */
 .state { border-left: 3px solid transparent; }
-.state--low { border-left-color: var(--amber); }
-.state--out { border-left-color: var(--vermilion); }
+.state--low { border-left-color: var(--warn); }
+.state--out { border-left-color: var(--danger); }
 .state__tag {
   font-size: var(--t-small); font-weight: 700;
   padding: 1px var(--sp-2); border-radius: var(--radius);
 }
-.state--low .state__tag { background: var(--amber-soft); color: var(--amber); }
-.state--out .state__tag { background: var(--vermilion-soft); color: var(--vermilion); }
+.state--low .state__tag { background: var(--warn-soft); color: var(--warn); }
+.state--out .state__tag { background: var(--danger-soft); color: var(--danger); }
 
 /* ==========================================================================
    buttons — one filled button per screen: the job the screen exists for
@@ -346,11 +366,12 @@ button { font: inherit; color: inherit; }
   font-weight: 600; cursor: pointer;
   text-decoration: none; /* .btn is used on both <button> and <a> */
 }
-/* Colour belongs to the data, so the action is ink. A black pill reads as
-   "press this" without competing with the gold field or the lead number. */
+/* The primary action is navy, the same hue as the active tab, so "where I
+   am" and "what to press next" read as one system rather than two. */
 .btn--primary {
-  background: var(--ink); border-color: var(--ink); color: var(--ground);
+  background: var(--accent); border-color: var(--accent); color: var(--accent-on);
 }
+.btn--primary:active { background: var(--navy-deep); border-color: var(--navy-deep); }
 .btn { border-radius: var(--radius-pill); }
 .btn--block { display: flex; width: 100%; }
 .btn--ghost { background: none; border-color: transparent; color: var(--ink-muted); }
@@ -361,8 +382,14 @@ button { font: inherit; color: inherit; }
 .capture__hint { font-size: var(--t-small); color: var(--ink-muted); }
 
 /* ==========================================================================
-   tab bar — the active item is a change of text colour and a 2px rule,
-   not a filled coloured pill
+   navigation - one element, two layouts
+   Below 900px it is a bottom tab bar, inside thumb reach. From 900px up the
+   same element stands on the left edge as a rail. Same markup, same
+   aria-current, no JavaScript: js/app.js only ever marks the current tab.
+   The active item is the one place colour is allowed onto chrome. A tint and
+   a hairline are not enough at arm's length in a bright stall, so it takes a
+   filled navy surface with a sunflower rule: 12.6:1 for the label, 6.6:1 for
+   the rule, and a weight shift that still carries if colour is lost.
    ========================================================================== */
 
 .tabbar {
@@ -372,18 +399,35 @@ button { font: inherit; color: inherit; }
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* The wordmark heads the rail. On a 360px bottom bar there is no room. */
+.tabbar__mark { display: none; }
+
 .tab {
   flex: 1 1 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px;
-  min-height: var(--tap); padding: var(--sp-2) 0 var(--sp-1);
+  gap: var(--sp-1);
+  min-height: var(--nav-h); padding: var(--sp-2) var(--sp-1);
   color: var(--ink-muted); text-decoration: none;
-  font-size: var(--t-small);
-  border-top: 2px solid transparent;
+  font-size: var(--t-small); font-weight: 600;
+  border-top: 3px solid transparent;
   margin-top: -1px;
 }
-.tab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.75; }
-.tab[aria-current="page"] { color: var(--ink); border-top-color: var(--oxblood); }
+.tab svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; }
+.tab__label { line-height: 1.1; }
+
+/* Pressed feedback changes tone, never layout bounds. */
+.tab:active { background: var(--accent-soft); color: var(--accent); }
+
+.tab[aria-current="page"] {
+  background: var(--accent);
+  border-top-color: var(--field);
+  color: var(--accent-on);
+  font-weight: 700;
+}
+/* Same specificity as .tab:active and declared later, so the current tab
+   needs its own press state or re-tapping it reads as dead. */
+.tab[aria-current="page"]:active { background: var(--navy-deep); }
 
 /* ==========================================================================
    motion — one move, and none at all if the person asks for none
@@ -401,12 +445,12 @@ button { font: inherit; color: inherit; }
    ========================================================================== */
 
 .hint { font-size: var(--t-small); color: var(--ink-muted); }
-.is-utang { color: var(--periwinkle); }
-.row__unit { font-weight: 400; color: var(--ink-faint); font-size: var(--t-small); }
+.is-utang { color: var(--utang); }
+.row__unit { font-weight: 400; color: var(--ink-faint); font-size: var(--t-micro); }
 .row__trail { display: flex; align-items: center; gap: var(--sp-3); }
 
 .btn--mini {
-  min-height: 34px; padding: 0 var(--sp-3);
+  min-height: 44px; padding: 0 var(--sp-4);
   font-size: var(--t-small); border-radius: var(--radius-pill);
 }
 
@@ -434,17 +478,17 @@ button { font: inherit; color: inherit; }
 .tile__name { font-weight: 600; font-size: 0.9375rem; line-height: 1.2; }
 .tile__price { margin-top: auto; font-weight: 700; }
 .tile__stock { font-size: var(--t-small); color: var(--ink-faint); }
-.tile__stock--low { color: var(--amber); font-weight: 600; }
-.tile__stock--out { color: var(--vermilion); font-weight: 600; }
+.tile__stock--low { color: var(--warn); font-weight: 600; }
+.tile__stock--out { color: var(--danger); font-weight: 600; }
 .tile--empty { opacity: 0.45; }
 
 /* --- Benta: the running cart, above the tab bar --------------------------- */
 
-body.has-cart { padding-bottom: calc(var(--tap) * 2 + 76px + env(safe-area-inset-bottom, 0px)); }
+body.has-cart { padding-bottom: calc(var(--nav-h) + 140px + env(safe-area-inset-bottom, 0px)); }
 
 .cart {
   position: fixed; left: 0; right: 0; z-index: 45;
-  bottom: calc(var(--tap) + 12px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
   border-top: 1px solid var(--line-strong);
   border-bottom: 1px solid var(--line);
@@ -471,7 +515,7 @@ body.has-cart { padding-bottom: calc(var(--tap) * 2 + 76px + env(safe-area-inset
 
 .stepper { display: flex; align-items: center; gap: var(--sp-1); }
 .stepper__btn {
-  width: 40px; height: 40px;
+  width: var(--tap); height: var(--tap);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.25rem; line-height: 1;
   background: var(--surface); color: var(--ink);
@@ -494,16 +538,18 @@ body.has-cart { padding-bottom: calc(var(--tap) * 2 + 76px + env(safe-area-inset
 }
 .segmented::-webkit-scrollbar { display: none; }
 .segmented__opt {
-  flex: 0 0 auto; min-height: 42px; padding: 0 var(--sp-4);
+  flex: 0 0 auto; min-height: var(--tap); padding: 0 var(--sp-4);
   background: var(--surface); color: var(--ink-muted);
   border: 1px solid var(--line); border-radius: var(--radius-pill);
   font-size: 0.9375rem; font-weight: 600;
   cursor: pointer; white-space: nowrap;
 }
-.segmented__opt.is-on { background: var(--ink); border-color: var(--ink); color: var(--ground); }
+.segmented__opt.is-on { background: var(--accent); border-color: var(--accent); color: var(--accent-on); }
 
 /* One series, so no legend and no gridlines. The current day carries the
-   only hue; the rest are a neutral tone step. */
+   only hue; the rest are a neutral tone step. Every bar takes a boundary,
+   because the 1.2:1 fill alone is not an indicator at all - and sunflower,
+   the obvious choice for "now", is 1.9:1 on white. Navy is 12.6:1. */
 .bars {
   display: flex; align-items: flex-end; gap: var(--sp-2);
   padding: var(--sp-4) var(--sp-4);
@@ -516,10 +562,11 @@ body.has-cart { padding-bottom: calc(var(--tap) * 2 + 76px + env(safe-area-inset
 .bars__bar {
   width: 100%; flex: 0 0 auto;
   background: var(--surface-sunk);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   min-height: 6px;
 }
-.bars__bar--now { background: var(--gold); }
+.bars__bar--now { background: var(--accent); border-color: var(--navy-deep); }
 .bars__label {
   margin-top: var(--sp-2); text-align: center;
   font-size: var(--t-small); color: var(--ink-muted);
@@ -530,9 +577,89 @@ body.has-cart { padding-bottom: calc(var(--tap) * 2 + 76px + env(safe-area-inset
 .toast {
   position: fixed; z-index: 60;
   left: var(--sp-4); right: var(--sp-4);
-  bottom: calc(var(--tap) + 20px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(var(--nav-h) + var(--sp-4) + env(safe-area-inset-bottom, 0px));
   margin: 0; padding: var(--sp-3) var(--sp-4);
   background: var(--ink); color: var(--ground);
   border-radius: var(--radius);
   font-size: 0.9375rem; text-align: center;
+}
+
+/* ==========================================================================
+   the rail — 900px and up
+   900, not 768: a market tablet held in portrait should still get the bottom
+   bar, because the constraint there is thumb reach rather than width. The
+   query is width-only, so a phone in landscape keeps the bar too.
+   ========================================================================== */
+
+@media (min-width: 900px) {
+  .tabbar {
+    top: 0; right: auto; bottom: 0;
+    width: var(--rail-w);
+    flex-direction: column;
+    gap: var(--sp-1);
+    padding: calc(env(safe-area-inset-top, 0px) + var(--sp-4)) 0
+             calc(env(safe-area-inset-bottom, 0px) + var(--sp-4));
+    border-top: 0;
+    border-right: 1px solid var(--line);
+  }
+
+  .tabbar__mark {
+    display: block;
+    margin: 0 0 var(--sp-5);
+    padding: 0 var(--sp-2);
+    text-align: center;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    min-height: 72px;
+    margin-top: 0;
+    padding: var(--sp-3) var(--sp-1);
+    /* the rule rotates with the rail: top edge becomes leading edge */
+    border-top: 0;
+    border-left: 3px solid transparent;
+  }
+  .tab[aria-current="page"] {
+    border-top: 0;
+    border-left-color: var(--field);
+  }
+
+  /* The rail owns the left edge, so everything fixed to the viewport has to
+     move over or it sits underneath. */
+  body { padding-left: var(--rail-w); padding-bottom: var(--sp-6); }
+  body.has-cart { padding-bottom: calc(var(--nav-h) + 140px); }
+  .cart  { left: var(--rail-w); bottom: 0; }
+  .toast { left: calc(var(--rail-w) + var(--sp-4)); bottom: var(--sp-5); }
+
+  /* Five rows stretched across 1400px is not a reading width. */
+  #view { max-width: var(--measure); }
+  .field-head { border-radius: 0 0 var(--radius-field) 0; }
+
+  /* The tiles would otherwise balloon to 300px wide apiece. */
+  .grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ==========================================================================
+   the marketing page shares this stylesheet
+   index.html loads app.css and then css/landing.css, and landing.css borrows
+   --ground, --line-strong, --ink-muted, --blue, --periwinkle and the type
+   scale from here without redefining them. The app's neutrals were cooled and
+   its type stepped up for a bright stall and older eyes; the landing keeps the
+   values it was composed against, so none of that leaks into a page that is
+   out of scope for this pass.
+   ========================================================================== */
+
+body.marketing {
+  --ground:       #F2F1EE;
+  --surface-sunk: #EAE8E3;
+  --line:         #E0DDD6;
+  --line-strong:  #CBC6BC;
+  --ink:          #191417;
+  --ink-muted:    #6B6560;
+  --ink-faint:    #938C85;
+
+  --t-lead:  2.75rem;
+  --t-title: 1.25rem;
+  --t-body:  1rem;
+  --t-small: 0.8125rem;
 }
