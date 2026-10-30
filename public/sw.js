@@ -1,21 +1,24 @@
 // Service worker: makes the app open offline. API calls are never cached.
 // Changed a file? Bump the version (kitaklaro-v2, ...) so phones get the new copy.
 
-const CACHE = 'kitaklaro-v6';
+const CACHE = 'kitaklaro-v9';
 const FILES = [
   './',
   './index.html',
   './utang.html',
   './ubos.html',
+  './ulat.html',
   './manifest.json',
   './css/style.css',
   './js/api.js',
   './js/parser.js',
   './js/voice.js',
+  './js/nav.js',
   './js/labels.js',
   './js/home.js',
   './js/utang.js',
   './js/ubos.js',
+  './js/ulat.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
 ];

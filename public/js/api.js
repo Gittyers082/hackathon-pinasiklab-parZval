@@ -7,8 +7,8 @@ const IS_LOCAL = /^(localhost|127\.0\.0\.1|.+\.localhost)$/.test(location.hostna
 let demoMode = !IS_LOCAL;
 
 function showDemoBadge() {
-  const badge = document.getElementById('demo-badge');
-  if (badge) badge.hidden = false;
+  // One in the mobile top bar, one in the sidebar.
+  document.querySelectorAll('.demo-badge').forEach(badge => { badge.hidden = false; });
 }
 document.addEventListener('DOMContentLoaded', () => { if (demoMode) showDemoBadge(); });
 
@@ -99,6 +99,12 @@ function getToday() {
   });
 }
 
+// Entry rows with from <= created_at < to ('YYYY-MM-DD'), oldest first.
+function getEntries(from, to) {
+  return call(`entries.php?from=${from}&to=${to}`, undefined, () =>
+    demoLoad().entries.filter(e => e.created_at >= from && e.created_at < to));
+}
+
 function getProducts() {
   return call('products.php', undefined, () => demoLoad().products);
 }
@@ -108,12 +114,19 @@ function getLowStock() {
     demoLoad().products.filter(p => p.stock <= p.low_at).sort((a, b) => a.stock - b.stock));
 }
 
-function setStock(name, stock) {
-  return call('products.php', post({ name, stock }), () => {
+// cost/price in pesos or null, expires_on 'YYYY-MM-DD' or null. Adds the product if it is new.
+function saveProduct({ name, stock, cost, price, expires_on }) {
+  return call('products.php', post({ name, stock, cost, price, expires_on }), () => {
     const db = demoLoad();
+    const fields = {
+      stock,
+      cost: cost === null ? null : Math.round(cost * 100),
+      price: price === null ? null : Math.round(price * 100),
+      expires_on,
+    };
     const product = db.products.find(p => p.name === clean(name));
-    if (product) product.stock = stock;
-    else db.products.push({ id: db.products.length + 1, name: clean(name), stock, low_at: 3 });
+    if (product) Object.assign(product, fields);
+    else db.products.push({ id: db.products.length + 1, name: clean(name), low_at: 3, ...fields });
     demoSave(db);
     return { ok: true };
   });
@@ -130,6 +143,13 @@ function now() {
   const d = new Date();
   const pad = n => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+// 'YYYY-MM-DD' n days from today (local time).
+function dayFromToday(n) {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return d.toLocaleDateString('en-CA'); // en-CA formats as YYYY-MM-DD
 }
 
 function demoLoad() {
@@ -149,11 +169,12 @@ function demoLoad() {
       { type: 'gastos', item: 'yelo', qty: 1, centavos: 6000, created_at: today },
     ],
     products: [
-      { id: 1, name: 'sardinas', stock: 24, low_at: 6 },
-      { id: 2, name: 'mantika', stock: 3, low_at: 3 },
-      { id: 3, name: 'suka', stock: 1, low_at: 3 },
-      { id: 4, name: 'yelo', stock: 0, low_at: 5 },
-      { id: 5, name: 'kape 3-in-1', stock: 40, low_at: 10 },
+      { id: 1, name: 'sardinas', stock: 24, low_at: 6, cost: 2200, price: 2800, expires_on: dayFromToday(540) },
+      { id: 2, name: 'mantika', stock: 3, low_at: 3, cost: 5500, price: 6500, expires_on: dayFromToday(240) },
+      { id: 3, name: 'suka', stock: 1, low_at: 3, cost: 1500, price: 2000, expires_on: dayFromToday(365) },
+      { id: 4, name: 'yelo', stock: 0, low_at: 5, cost: 300, price: 500, expires_on: null },
+      { id: 5, name: 'kape 3-in-1', stock: 40, low_at: 10, cost: 700, price: 1000, expires_on: dayFromToday(200) },
+      { id: 6, name: 'tinapay', stock: 4, low_at: 5, cost: 450, price: 600, expires_on: dayFromToday(2) },
     ],
   };
   demoSave(db);

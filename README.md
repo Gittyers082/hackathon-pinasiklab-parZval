@@ -29,6 +29,7 @@ DB_PASS=""
 
 ### 3. Create the database
 In MySQL Workbench, open and run (⚡) `database/schema.sql`, then `database/seed.sql`.
+Already had the database before products got prices and expiry? Run `database/migrate-001-product-prices.sql` once instead of re-running `schema.sql`.
 `seed.sql` empties the tables first, so you can re-run it any time to reset the demo data.
 
 ### 4. Virtual host
@@ -69,9 +70,10 @@ If you see `{"error":"Server error"}`, check `.env` and that the SQL scripts ran
 | `api/utang.php` | POST | `{name, amount, type:'utang'\|'bayad', item}` |
 | `api/entries.php` | POST | `{type:'benta'\|'gastos', item, qty, amount}` (benta lowers, gastos raises the matching product's stock) |
 | `api/entries.php?today=1` | GET | `{benta, gastos, kumita}` in centavos |
-| `api/products.php` | GET | all products |
+| `api/entries.php?from=YYYY-MM-DD&to=YYYY-MM-DD` | GET | entry rows with from ≤ created_at < to (used by the Ulat page) |
+| `api/products.php` | GET | all products `{id, name, stock, low_at, cost, price, expires_on}` (cost/price in centavos or null) |
 | `api/products.php?low=1` | GET | products where stock ≤ low_at |
-| `api/products.php` | POST | `{name, stock}` sets stock |
+| `api/products.php` | POST | `{name, stock, cost, price, expires_on}` saves a product (adds it if new); cost/price in pesos, expires_on `YYYY-MM-DD`, blank = `null` |
 
 `amount` is sent in pesos (0 < amount ≤ 100,000); every response amount is in centavos.
 

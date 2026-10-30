@@ -10,27 +10,15 @@
   <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-  <header class="top">
-    <h1>KitaKlaro</h1>
-    <span id="demo-badge" class="badge" data-label="demo" hidden></span>
-    <select id="lang" aria-label="Wika / Language">
-      <option value="tl">Tagalog</option>
-      <option value="ilo">Ilocano</option>
-      <option value="en">English</option>
-    </select>
-  </header>
-
+  <script src="./js/nav.js"></script>
   <main>
     <h2 data-label="ubos_title"></h2>
+    <details id="add-product" class="card product add-product">
+      <summary data-label="add_product"></summary>
+    </details>
     <p id="message" class="message" role="status"></p>
     <ul id="inventory-list" class="list"></ul>
   </main>
-
-  <nav class="bottom-nav">
-    <a href="./index.html">🏠<span data-label="nav_home"></span></a>
-    <a href="./utang.html">📒<span data-label="nav_utang"></span></a>
-    <a href="./ubos.html" aria-current="page">📦<span data-label="nav_ubos"></span></a>
-  </nav>
 
   <script src="./js/labels.js"></script>
   <script src="./js/api.js"></script>

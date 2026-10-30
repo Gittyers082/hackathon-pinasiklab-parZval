@@ -1,6 +1,7 @@
 <?php
 // POST {type:'benta'|'gastos', item, qty, amount}
 // GET ?today=1 -> {benta, gastos, kumita} in centavos
+// GET ?from=YYYY-MM-DD&to=YYYY-MM-DD -> entry rows with from <= created_at < to
 require __DIR__ . '/../../src/helpers.php';
 require __DIR__ . '/../../src/db.php';
 
@@ -31,8 +32,18 @@ try {
         send_json(['ok' => true, 'id' => $id], 201);
     }
 
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['from'], $_GET['to'])) {
+        // Raw rows for the Ulat page, which does the adding up (same code as demo mode).
+        $from = DateTime::createFromFormat('!Y-m-d', (string) $_GET['from']);
+        $to = DateTime::createFromFormat('!Y-m-d', (string) $_GET['to']);
+        if (!$from || !$to || $from >= $to) send_json(['error' => 'Mali ang petsa'], 400);
+        $stmt = db()->prepare('SELECT type, item, qty, centavos, created_at FROM entries WHERE created_at >= ? AND created_at < ? ORDER BY created_at');
+        $stmt->execute([$from->format('Y-m-d'), $to->format('Y-m-d')]);
+        send_json($stmt->fetchAll());
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        if (!isset($_GET['today'])) send_json(['error' => 'Gamitin ang ?today=1'], 400);
+        if (!isset($_GET['today'])) send_json(['error' => 'Gamitin ang ?today=1 o ?from=...&to=...'], 400);
 
         $row = db()->query(
             "SELECT COALESCE(SUM(IF(type = 'benta', centavos, 0)), 0) AS benta,

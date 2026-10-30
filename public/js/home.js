@@ -22,6 +22,28 @@ async function loadToday() {
   } catch (e) {
     say(e.message, true);
   }
+  loadExpiry(); // a benta/gastos changes stock, so refresh the reminder too
+}
+
+// Reminder card: items still in stock that expire within EXPIRY_WARN_DAYS (or already expired).
+async function loadExpiry() {
+  try {
+    const soon = (await getProducts())
+      .filter(p => p.expires_on && p.stock > 0 && daysUntil(p.expires_on) <= EXPIRY_WARN_DAYS)
+      .sort((a, b) => a.expires_on.localeCompare(b.expires_on));
+    const list = document.getElementById('expiry-list');
+    list.replaceChildren(...soon.map(p => {
+      const li = document.createElement('li');
+      const name = document.createElement('span');
+      name.className = 'name';
+      name.textContent = p.name;
+      li.append(name, ` (${p.stock}): ${expiryText(p.expires_on)}`);
+      return li;
+    }));
+    document.getElementById('expiry-alert').hidden = !soon.length;
+  } catch (e) {
+    // loadToday already shows server errors in the message line.
+  }
 }
 
 // Fields are read-only until the owner taps "Ayusin".
@@ -103,11 +125,12 @@ confirmForm.addEventListener('submit', async event => {
 // Mic
 const mic = document.getElementById('mic');
 setupMicVisibility(mic);
+const micLabel = mic.querySelector('span');
 mic.addEventListener('click', () => {
-  mic.textContent = t('listening');
+  micLabel.textContent = t('listening');
   mic.classList.add('listening');
   listenOnce(handleText, () => {
-    mic.textContent = t('mic');
+    micLabel.textContent = t('mic');
     mic.classList.remove('listening');
   }, code => {
     if (code !== 'no-speech' && code !== 'aborted') say(t('error') + ' (' + code + ')', true);

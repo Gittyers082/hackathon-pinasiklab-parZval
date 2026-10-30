@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1f7a4d">
+  <title>Ulat – KitaKlaro</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <script src="./js/nav.js"></script>
+  <main>
+    <h2 data-label="ulat_title"></h2>
+
+    <div class="periods" role="group" aria-label="Period">
+      <button class="btn secondary" type="button" data-period="week" data-label="p_week"></button>
+      <button class="btn secondary" type="button" data-period="month" data-label="p_month"></button>
+      <button class="btn secondary" type="button" data-period="year" data-label="p_year"></button>
+    </div>
+    <p id="message" class="message" role="status"></p>
+
+    <div id="report">
+      <section class="card kumita">
+        <h2 data-label="kumita_period"></h2>
+        <p id="range" class="muted"></p>
+        <p id="net" class="big-number">₱0.00</p>
+        <p id="delta" class="delta"></p>
+      </section>
+
+      <div class="tiles">
+        <section class="card tile">
+          <h3 data-label="benta"></h3>
+          <p id="t-benta" class="tile-value"></p>
+        </section>
+        <section class="card tile">
+          <h3 data-label="gastos"></h3>
+          <p id="t-gastos" class="tile-value"></p>
+        </section>
+        <section class="card tile wide">
+          <h3 data-label="profit_est"></h3>
+          <p id="t-profit" class="tile-value"></p>
+          <p class="muted small" data-label="profit_note"></p>
+        </section>
+      </div>
+
+      <section class="card">
+        <h3 data-label="chart_title"></h3>
+        <ul class="legend">
+          <li><span class="key benta"></span><span data-label="benta"></span></li>
+          <li><span class="key gastos"></span><span data-label="gastos"></span></li>
+        </ul>
+        <div id="chart" class="chart"></div>
+        <details class="table-view">
+          <summary data-label="show_table"></summary>
+          <table id="chart-table"></table>
+        </details>
+      </section>
+
+      <section class="card">
+        <h3 data-label="top_benta"></h3>
+        <ol id="top-benta" class="top-list"></ol>
+      </section>
+
+      <section class="card">
+        <h3 data-label="top_gastos"></h3>
+        <ol id="top-gastos" class="top-list"></ol>
+      </section>
+    </div>
+  </main>
+
+  <script src="./js/labels.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/ulat.js"></script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>

@@ -33,5 +33,8 @@ CREATE TABLE IF NOT EXISTS products (
   id     INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name   VARCHAR(60) NOT NULL UNIQUE,
   stock  INT NOT NULL DEFAULT 0,
-  low_at INT NOT NULL DEFAULT 3
+  cost_centavos  INT UNSIGNED NULL, -- puhunan: what the store paid per piece
+  price_centavos INT UNSIGNED NULL, -- selling price per piece
+  low_at INT NOT NULL DEFAULT 3,
+  expires_on DATE NULL -- one date per product, used for the Home expiry reminder
 ) ENGINE=InnoDB;

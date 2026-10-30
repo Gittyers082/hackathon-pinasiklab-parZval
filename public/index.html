@@ -11,17 +11,14 @@
   <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-  <header class="top">
-    <h1>KitaKlaro</h1>
-    <span id="demo-badge" class="badge" data-label="demo" hidden></span>
-    <select id="lang" aria-label="Wika / Language">
-      <option value="tl">Tagalog</option>
-      <option value="ilo">Ilocano</option>
-      <option value="en">English</option>
-    </select>
-  </header>
-
+  <script src="./js/nav.js"></script>
   <main>
+    <section id="expiry-alert" class="card alert" role="status" hidden>
+      <h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg><span data-label="expiry_title"></span></h2>
+      <ul id="expiry-list" class="expiry-list"></ul>
+      <a href="./ubos.html" data-label="see_inventory"></a>
+    </section>
+
     <section class="card kumita">
       <h2 data-label="kumita_title"></h2>
       <p class="muted" data-label="today"></p>
@@ -32,7 +29,10 @@
       </p>
     </section>
 
-    <button id="mic" class="btn mic" type="button" data-label="mic" hidden></button>
+    <button id="mic" class="btn mic" type="button" hidden>
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      <span data-label="mic"></span>
+    </button>
 
     <form id="type-form" class="type-form">
       <input id="type-box" type="text" autocomplete="off" data-label-ph="type_ph" aria-label="Type entry">
@@ -62,12 +62,6 @@
       </div>
     </form>
   </main>
-
-  <nav class="bottom-nav">
-    <a href="./index.html" aria-current="page">🏠<span data-label="nav_home"></span></a>
-    <a href="./utang.html">📒<span data-label="nav_utang"></span></a>
-    <a href="./ubos.html">📦<span data-label="nav_ubos"></span></a>
-  </nav>
 
   <script src="./js/labels.js"></script>
   <script src="./js/api.js"></script>
