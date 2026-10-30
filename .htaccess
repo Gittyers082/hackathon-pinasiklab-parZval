@@ -1,0 +1,4 @@
+# Blocks .env, src/, database/ and notes/ when the site is opened through
+# http://localhost/hackathon-pinasiklab-parZval/ instead of the virtual host.
+# public/.htaccess opens the app folder back up.
+Require all denied

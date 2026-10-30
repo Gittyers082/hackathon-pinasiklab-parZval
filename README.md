@@ -5,7 +5,7 @@ KitaKlaro is a voice- and typing-friendly "store notebook" PWA for sari-sari sto
 
 1. **Sino may utang?** A private utang ledger. Utang and bayad are separate records; balance = utang − bayad. "Ipakita kay suki" shows a big, clean balance screen.
 2. **Kumita ba ako?** Today's benta minus gastos, as one big number.
-3. **Ano ubos na?** Products where stock ≤ low_at.
+3. **Ano ubos na?** Products where stock ≤ low_at, or expiring within 7 days. A red count on the Imbentaryo link and a list in the sidebar show them on every page.
 
 Stack: HTML + CSS + vanilla JS (PWA) + plain PHP 8 + MySQL. No frameworks, no npm, no build step.
 
@@ -25,7 +25,7 @@ DB_USER="root"
 DB_PASS=""
 ```
 
-`.env` is outside `public/` so the browser can never download it, and it is in `.gitignore`.
+`.env` is outside `public/` so the virtual host never serves it, and it is in `.gitignore`. On the fallback URL (step 5), the root `.htaccess` blocks `.env`, `src/`, `database/` and `notes/`.
 
 ### 3. Create the database
 In MySQL Workbench, open and run (⚡) `database/schema.sql`, then `database/seed.sql`.
@@ -57,9 +57,11 @@ If you see `{"error":"Server error"}`, check `.env` and that the SQL scripts ran
 - Type or say things like `utang si Mang Tonyo 50 sardinas`, `nagbayad si Ate Joy 200`, `nabenta 3 kape 45`, `bumili ng mantika 120`.
 - Every entry shows a **confirmation card** first ("Tama ✓" / "Ayusin"). Yellow fields are the ones the parser is unsure about.
 - Money is stored as **integer centavos** (₱85.50 → 8550). Names are stored trimmed and lowercase.
-- **Demo mode:** if the PHP API can't be reached, or the page is not on localhost (e.g. GitHub Pages), data is saved in the browser's localStorage and a "Demo mode" badge appears.
+- **Demo mode:** when the page is not on localhost (e.g. GitHub Pages), data is saved in the browser's localStorage and a "Demo mode" badge appears. On localhost it never falls back: if WAMP or MySQL is down you see an error, so you know the entry was NOT saved.
+- **Inventory:** tap a product to edit its name, stock, low-stock warning (`low_at`), puhunan, price and expiry, or to delete it (asks first). Renaming does not rename old benta/gastos rows.
 - **Parser tests:** `node public/js/parser.js`, or open the Home page and run `runParserTests()` in the browser console.
-- **Service worker:** pages are cached for offline use. After changing HTML/CSS/JS, bump `CACHE` in `public/sw.js` (`kitaklaro-v2`, …) or tick "Update on reload" in DevTools → Application → Service Workers.
+- **Service worker:** network first, so online you always get the newest files; offline the cached copy opens. Bump `CACHE` in `public/sw.js` only when you add or remove a file in its `FILES` list.
+- **GitHub Pages:** copy everything in `public/` into `docs/`, then in the repo Settings → Pages pick the branch and the `/docs` folder.
 
 ## API
 
@@ -68,12 +70,12 @@ If you see `{"error":"Server error"}`, check `.env` and that the SQL scripts ran
 | `api/utang.php` | GET | everyone with balance > 0, biggest first |
 | `api/utang.php?name=...` | GET | `{name, balance, history[]}` |
 | `api/utang.php` | POST | `{name, amount, type:'utang'\|'bayad', item}` |
-| `api/entries.php` | POST | `{type:'benta'\|'gastos', item, qty, amount}` (benta lowers, gastos raises the matching product's stock) |
+| `api/entries.php` | POST | `{type:'benta'\|'gastos', item, qty, amount, add_product?}` (benta lowers, gastos raises the matching product's stock; an unknown item is only added to the inventory when `add_product` is `true`) |
 | `api/entries.php?today=1` | GET | `{benta, gastos, kumita}` in centavos |
 | `api/entries.php?from=YYYY-MM-DD&to=YYYY-MM-DD` | GET | entry rows with from ≤ created_at < to (used by the Ulat page) |
 | `api/products.php` | GET | all products `{id, name, stock, low_at, cost, price, expires_on}` (cost/price in centavos or null) |
-| `api/products.php?low=1` | GET | products where stock ≤ low_at |
-| `api/products.php` | POST | `{name, stock, cost, price, expires_on}` saves a product (adds it if new); cost/price in pesos, expires_on `YYYY-MM-DD`, blank = `null` |
+| `api/products.php` | POST | `{id?, name, stock, low_at, cost, price, expires_on}`: with `id` edits that product (rename included, 409 if the name is taken); without `id` saves by name (adds it if new); `low_at` left out keeps the current value (new product: 3); cost/price in pesos, expires_on `YYYY-MM-DD`, blank = `null`. Price below cost and past expiry dates are accepted; the Inventory form asks the owner to confirm them |
+| `api/products.php?id=...` | DELETE | removes the product (old entries stay) |
 
 `amount` is sent in pesos (0 < amount ≤ 100,000); every response amount is in centavos.
 

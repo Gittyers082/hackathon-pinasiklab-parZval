@@ -105,6 +105,7 @@ main > h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; margin
   padding: 8px 12px 16px;
   background: var(--green-deep);
   color: #fff;
+  overflow-y: auto; /* a long alert list scrolls instead of pushing the footer off screen */
   transform: translateX(-100%);
   visibility: hidden;
   transition: transform 0.28s var(--ease-out), visibility 0s linear 0.28s;
@@ -127,7 +128,32 @@ main > h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; margin
 .side-nav a:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
 .side-nav a[aria-current="page"] { background: #fff; color: var(--green-deep); font-weight: 750; }
 
-.sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+/* Inventory alerts: red count on the nav link, dot on the menu button, list in the sidebar */
+.count-badge {
+  margin-left: auto;
+  min-width: 24px;
+  padding: 0 7px;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 12px;
+  font-variant-numeric: tabular-nums;
+}
+#menu-open { position: relative; }
+#menu-open .dot { position: absolute; top: 10px; right: 10px; width: 10px; height: 10px; background: #ff5a4f; border: 2px solid var(--green-deep); border-radius: 50%; }
+.side-alerts { margin-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 8px; }
+.side-alerts summary { display: flex; align-items: center; min-height: 48px; padding: 0 12px; color: #ffb4ad; font-weight: 700; cursor: pointer; }
+.side-alerts summary:hover { background: rgba(255, 255, 255, 0.07); }
+.side-alerts h3 { margin: 8px 12px 4px; font-size: 0.8rem; font-weight: 700; color: #a9c2b4; text-transform: uppercase; letter-spacing: 0.04em; }
+.side-alerts ul { list-style: none; margin: 0 0 8px; padding: 0; }
+.side-alerts a { display: block; padding: 6px 12px; color: #fff; font-size: 0.9rem; line-height: 1.3; text-decoration: none; }
+.side-alerts a:hover { background: rgba(255, 255, 255, 0.07); }
+.side-alerts .name { font-weight: 700; text-transform: capitalize; }
+
+.sidebar-foot { margin-top: auto; padding-top: 16px; display: flex; flex-direction: column; gap: 10px; }
 .sidebar-foot select { background: rgba(255, 255, 255, 0.08); color: #fff; border-color: rgba(255, 255, 255, 0.3); }
 .sidebar-foot select option { color: var(--ink); }
 
@@ -199,6 +225,8 @@ main > h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; margin
 .btn.secondary { background: #fff; color: var(--green); }
 .btn.secondary:hover { background: var(--green-tint); }
 .btn:disabled { opacity: 0.6; cursor: wait; }
+.btn.danger { background: #fff; color: var(--red); border-color: var(--red); }
+.btn.danger:hover { background: var(--red-tint); }
 
 .mic { width: 100%; min-height: 72px; font-size: 1.25rem; margin-bottom: 12px; }
 .mic .icon { width: 26px; height: 26px; }
@@ -231,6 +259,17 @@ input.weak, select.weak { background: var(--yellow); border-color: #c9a400; }
 .confirm label { display: block; margin-bottom: 12px; font-weight: 600; }
 .confirm label > span { display: block; margin-bottom: 4px; font-size: 0.95rem; }
 .row { display: flex; gap: 8px; }
+
+/* Confirmation card: what this entry will do to the inventory */
+.stock-preview { margin: -4px 0 12px; font-weight: 600; color: var(--green-dark); font-variant-numeric: tabular-nums; }
+.stock-preview.warn { color: var(--red); }
+.hint { margin: -6px 0 12px; color: var(--muted); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.confirm label.check { display: flex; align-items: center; gap: 12px; min-height: 48px; cursor: pointer; }
+.confirm label.check > span { display: inline; margin: 0; }
+.check input { width: 24px; height: 24px; min-height: 0; padding: 0; accent-color: var(--green); }
+
+/* Inventory form: "are you sure?" for a price below puhunan or a past expiry date */
+.form-warning { margin: 0 0 12px; padding: 10px 12px; background: var(--red-tint); border: 1px solid var(--red); color: var(--red); font-weight: 600; }
 .row .btn { flex: 1; }
 
 /* ---- Lists ---- */

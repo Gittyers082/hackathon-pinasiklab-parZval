@@ -48,6 +48,12 @@ function post(body) {
 function addUtang({ name, amount, type, item }) {
   return call('utang.php', post({ name, amount, type, item }), () => {
     const db = demoLoad();
+    if (type === 'bayad') {
+      const balance = db.utang.filter(u => u.name === clean(name))
+        .reduce((sum, u) => sum + (u.type === 'utang' ? u.centavos : -u.centavos), 0);
+      if (balance <= 0) throw new Error(`Walang utang si ${clean(name)}. Tingnan ang pangalan sa listahan ng Utang.`);
+      if (Math.round(amount * 100) > balance) throw new Error(`Sobra ang bayad. ${peso(balance)} lang ang utang ni ${clean(name)}.`);
+    }
     db.utang.push({ name: clean(name), type, centavos: Math.round(amount * 100), item: clean(item), created_at: now() });
     demoSave(db);
     return { ok: true };
@@ -75,13 +81,23 @@ function getSuki(name) {
   });
 }
 
-function addEntry({ type, item, qty, amount }) {
-  return call('entries.php', post({ type, item, qty, amount }), () => {
+// addProduct: for a gastos whose item is NOT in the inventory yet, also create the product
+// (stock = qty, puhunan = amount / qty). Matching items are always updated, never duplicated.
+function addEntry({ type, item, qty, amount, addProduct = false }) {
+  return call('entries.php', post({ type, item, qty, amount, add_product: Boolean(addProduct) }), () => {
     const db = demoLoad();
-    db.entries.push({ type, item: clean(item), qty, centavos: Math.round(amount * 100), created_at: now() });
     const product = db.products.find(p => p.name === clean(item));
-    if (type === 'benta' && product) product.stock = Math.max(product.stock - qty, 0);
+    if (type === 'benta' && product && product.stock < qty) {
+      throw new Error(`Kulang ang stock: ${product.stock} na lang ang ${product.name}. Ayusin ang bilang sa Imbentaryo kung mali.`);
+    }
+    db.entries.push({ type, item: clean(item), qty, centavos: Math.round(amount * 100), created_at: now() });
+    if (type === 'benta' && product) product.stock -= qty;
     if (type === 'gastos' && product) product.stock += qty;
+    if (type === 'gastos' && !product && addProduct) {
+      const id = Math.max(0, ...db.products.map(p => p.id)) + 1;
+      db.products.push({ id, name: clean(item), stock: qty, low_at: 3,
+        cost: Math.round((amount * 100) / qty), price: null, expires_on: null });
+    }
     demoSave(db);
     return { ok: true };
   });
@@ -109,24 +125,33 @@ function getProducts() {
   return call('products.php', undefined, () => demoLoad().products);
 }
 
-function getLowStock() {
-  return call('products.php?low=1', undefined, () =>
-    demoLoad().products.filter(p => p.stock <= p.low_at).sort((a, b) => a.stock - b.stock));
-}
-
-// cost/price in pesos or null, expires_on 'YYYY-MM-DD' or null. Adds the product if it is new.
-function saveProduct({ name, stock, cost, price, expires_on }) {
-  return call('products.php', post({ name, stock, cost, price, expires_on }), () => {
+// cost/price in pesos or null, expires_on 'YYYY-MM-DD' or null.
+// With id: edits that product (rename included). Without id: saves by name, adding it if it is new.
+function saveProduct({ id, name, stock, low_at, cost, price, expires_on }) {
+  return call('products.php', post({ id, name, stock, low_at, cost, price, expires_on }), () => {
     const db = demoLoad();
+    const taken = db.products.find(p => p.name === clean(name));
+    if (id && taken && taken.id !== id) throw new Error(`May produkto nang "${clean(name)}".`);
     const fields = {
       stock,
+      low_at,
       cost: cost === null ? null : Math.round(cost * 100),
       price: price === null ? null : Math.round(price * 100),
       expires_on,
     };
-    const product = db.products.find(p => p.name === clean(name));
-    if (product) Object.assign(product, fields);
-    else db.products.push({ id: db.products.length + 1, name: clean(name), low_at: 3, ...fields });
+    const product = id ? db.products.find(p => p.id === id) : taken;
+    if (product) Object.assign(product, fields, { name: clean(name) });
+    else db.products.push({ id: Math.max(0, ...db.products.map(p => p.id)) + 1, name: clean(name), ...fields });
+    demoSave(db);
+    return { ok: true };
+  });
+}
+
+// Removes the product only; past benta/gastos entries stay in the Ulat.
+function deleteProduct(id) {
+  return call('products.php?id=' + id, { method: 'DELETE' }, () => {
+    const db = demoLoad();
+    db.products = db.products.filter(p => p.id !== id);
     demoSave(db);
     return { ok: true };
   });

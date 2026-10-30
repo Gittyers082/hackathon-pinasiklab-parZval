@@ -21,11 +21,11 @@ const PAGES = [
 (function buildShell() {
   const page = location.pathname.split('/').pop() || 'index.html';
   const links = PAGES.map(p => `
-    <a href="./${p.href}"${p.href === page ? ' aria-current="page"' : ''}>${ICONS[p.icon]}<span data-label="${p.label}"></span></a>`).join('');
+    <a href="./${p.href}"${p.href === page ? ' aria-current="page"' : ''}>${ICONS[p.icon]}<span data-label="${p.label}"></span>${p.icon === 'ubos' ? '<span class="count-badge" hidden></span>' : ''}</a>`).join('');
 
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar">
-      <button id="menu-open" class="icon-btn" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Menu">${ICONS.menu}</button>
+      <button id="menu-open" class="icon-btn" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Menu">${ICONS.menu}<span class="dot" hidden></span></button>
       <span class="brand">KitaKlaro</span>
       <span class="badge demo-badge" data-label="demo" hidden></span>
     </header>
@@ -36,11 +36,15 @@ const PAGES = [
         <button id="menu-close" class="icon-btn" type="button" aria-label="Close menu">${ICONS.close}</button>
       </div>
       <nav class="side-nav">${links}</nav>
+      <details id="side-alerts" class="side-alerts" hidden>
+        <summary><span data-label="alerts_title"></span></summary>
+        <div data-list="low"><h3 data-label="low_title"></h3><ul></ul></div>
+        <div data-list="expiry"><h3 data-label="expiry_title"></h3><ul></ul></div>
+      </details>
       <div class="sidebar-foot">
         <span class="badge demo-badge" data-label="demo" hidden></span>
         <select id="lang" aria-label="Wika / Language">
           <option value="tl">Tagalog</option>
-          <option value="ilo">Ilocano</option>
           <option value="en">English</option>
         </select>
       </div>
@@ -67,3 +71,42 @@ const PAGES = [
     if (event.key === 'Escape' && sidebar.classList.contains('open')) setOpen(false);
   });
 })();
+
+// Red count on the Inventory link (and a dot on the mobile menu button), plus the sidebar list
+// of what is running low (stock <= low_at) or expiring within EXPIRY_WARN_DAYS.
+// Home and Inventory call this again after every change to stock.
+function renderAlerts(products) {
+  const low = products.filter(p => p.stock <= p.low_at).sort((a, b) => a.stock - b.stock);
+  const expiring = products
+    .filter(p => p.expires_on && p.stock > 0 && daysUntil(p.expires_on) <= EXPIRY_WARN_DAYS)
+    .sort((a, b) => a.expires_on.localeCompare(b.expires_on));
+  const count = new Set([...low, ...expiring].map(p => p.name)).size;
+
+  const badge = document.querySelector('.side-nav .count-badge');
+  badge.textContent = count;
+  badge.hidden = !count;
+  document.querySelector('#menu-open .dot').hidden = !count;
+  document.getElementById('side-alerts').hidden = !count;
+
+  const fill = (key, items, text) => {
+    const box = document.querySelector(`#side-alerts [data-list="${key}"]`);
+    box.hidden = !items.length;
+    box.querySelector('ul').replaceChildren(...items.map(p => {
+      const a = document.createElement('a');
+      a.href = './ubos.html';
+      const name = document.createElement('span');
+      name.className = 'name';
+      name.textContent = p.name; // textContent: never trust names as HTML
+      a.append(name, document.createElement('br'), text(p));
+      const li = document.createElement('li');
+      li.appendChild(a);
+      return li;
+    }));
+  };
+  fill('low', low, p => t('left_n').replace('{n}', p.stock));
+  fill('expiry', expiring, p => expiryText(p.expires_on));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  getProducts().then(renderAlerts).catch(() => {}); // the page itself shows server errors
+});

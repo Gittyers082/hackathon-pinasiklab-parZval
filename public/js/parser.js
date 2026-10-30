@@ -1,8 +1,9 @@
 // parseTaglish(text): turns a typed or spoken Taglish phrase into an entry.
-// Returns {kind, name, item, qty, amount, confidence, needsConfirm, weak}
+// Returns {kind, name, item, qty, amount, confidence, needsConfirm, weak, numberCount}
 //   kind: 'utang' | 'bayad' | 'benta' | 'gastos' | null
 //   amount: pesos (not centavos), e.g. 85.5
 //   weak: list of fields the UI should highlight yellow
+//   numberCount: how many numbers were heard (home.js uses it to read "benta 3 sardinas" as qty 3)
 // Test it: `node public/js/parser.js` or runParserTests() in the browser console.
 
 const NUMBER_WORDS = {
@@ -58,14 +59,6 @@ const NUMBER_WORDS = {
   sandaan: 100,
   isandaan: 100,
   siyento: 100,
-  // TODO: verify with native Ilocano speaker
-  maysa: 1,
-  dua: 2,
-  tallo: 3,
-  uppat: 4,
-  innem: 6,
-  siam: 9,
-  sangapulo: 10,
 };
 const MULTIPLIERS = {
   daan: 100,
@@ -94,33 +87,9 @@ const KIND_WORDS = {
   gumastos: "gastos",
   bumili: "gastos",
   binili: "gastos",
-  // TODO: verify with native Ilocano speaker
-  nailako: "benta",
-  inlako: "benta",
-  gimmatang: "gastos",
-  ginatang: "gastos",
 };
 
-// Words that only show up in Ilocano phrases; they lower confidence a bit.
-// TODO: verify with native Ilocano speaker
-const ILOCANO_WORDS = [
-  "maysa",
-  "dua",
-  "tallo",
-  "uppat",
-  "innem",
-  "siam",
-  "sangapulo",
-  "nailako",
-  "inlako",
-  "gimmatang",
-  "ginatang",
-  "ti",
-  "iti",
-  "ken",
-];
-
-const NAME_MARKERS = ["si", "ni", "kay"]; // "utang si ...", Ilocano "utang ni ..."
+const NAME_MARKERS = ["si", "ni", "kay"]; // "utang si ...", "utang ni ..."
 const STOP_WORDS = [
   "si",
   "ni",
@@ -137,9 +106,6 @@ const STOP_WORDS = [
   "peso",
   "piso",
   "php",
-  "ti",
-  "iti",
-  "ken",
   "a",
 ];
 
@@ -264,10 +230,6 @@ function parseTaglish(text) {
     confidence -= 0.3;
     weak.push("item");
   }
-  if (tokens.some((t) => ILOCANO_WORDS.includes(t))) {
-    confidence -= 0.15;
-    weak.push("kind");
-  }
   confidence = Math.max(0, Math.round(confidence * 100) / 100);
 
   return {
@@ -279,6 +241,7 @@ function parseTaglish(text) {
     confidence,
     needsConfirm: confidence < 0.8,
     weak,
+    numberCount: numbers.length,
   };
 }
 
@@ -378,16 +341,6 @@ const parserTests = [
   {
     text: "utang ni Aling Rosing isandaan kape",
     expect: { kind: "utang", name: "aling rosing", item: "kape", amount: 100 },
-  },
-  {
-    text: "nailako ti dua a kape 30",
-    expect: {
-      kind: "benta",
-      qty: 2,
-      amount: 30,
-      item: "kape",
-      needsConfirm: false,
-    },
   },
 ];
 
