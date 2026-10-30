@@ -1,2 +1,0 @@
-# Re-opens the app folder; the project root .htaccess denies everything else.
-Require all granted
