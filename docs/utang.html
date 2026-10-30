@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1f7a4d">
+  <title>Utang – KitaKlaro</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <script src="./js/nav.js"></script>
+  <main>
+    <h2 data-label="utang_title"></h2>
+    <p id="message" class="message" role="status"></p>
+    <ul id="utang-list" class="list"></ul>
+  </main>
+
+  <!-- "Ipakita kay suki": big, clean screen the owner shows the customer -->
+  <section id="suki-screen" class="suki-screen" hidden>
+    <p id="suki-name" class="suki-name"></p>
+    <p class="muted" data-label="balance"></p>
+    <p id="suki-balance" class="big-number"></p>
+    <h3 data-label="history"></h3>
+    <ul id="suki-history" class="history"></ul>
+    <button id="suki-close" class="btn" type="button" data-label="close"></button>
+  </section>
+
+  <script src="./js/labels.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/utang.js"></script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>

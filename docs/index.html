@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1f7a4d">
+  <title>KitaKlaro</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <script src="./js/nav.js"></script>
+  <main>
+    <section id="expiry-alert" class="card alert" role="status" hidden>
+      <h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg><span data-label="expiry_title"></span></h2>
+      <ul id="expiry-list" class="expiry-list"></ul>
+      <a href="./ubos.html" data-label="see_inventory"></a>
+    </section>
+
+    <section class="card kumita">
+      <h2 data-label="kumita_title"></h2>
+      <p class="muted" data-label="today"></p>
+      <p id="kumita" class="big-number">₱0.00</p>
+      <p class="split">
+        <span><span data-label="benta"></span>: <b id="benta">₱0.00</b></span>
+        <span><span data-label="gastos"></span>: <b id="gastos">₱0.00</b></span>
+      </p>
+    </section>
+
+    <button id="mic" class="btn mic" type="button" hidden>
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      <span data-label="mic"></span>
+    </button>
+
+    <form id="type-form" class="type-form">
+      <input id="type-box" type="text" autocomplete="off" data-label-ph="type_ph" aria-label="Type entry">
+      <button class="btn" type="submit" data-label="add"></button>
+    </form>
+
+    <p id="message" class="message" role="status"></p>
+
+    <form id="confirm" class="card confirm" hidden>
+      <h2 data-label="confirm_title"></h2>
+      <label><span data-label="f_kind"></span>
+        <select name="kind">
+          <option value="" disabled>—</option>
+          <option value="utang" data-label="k_utang"></option>
+          <option value="bayad" data-label="k_bayad"></option>
+          <option value="benta" data-label="k_benta"></option>
+          <option value="gastos" data-label="k_gastos"></option>
+        </select>
+      </label>
+      <label data-for="name"><span data-label="f_name"></span><input name="name" maxlength="60"></label>
+      <label><span data-label="f_item"></span><input name="item" maxlength="60" list="product-names" autocomplete="off"></label>
+      <datalist id="product-names"></datalist>
+      <label data-for="qty"><span data-label="f_qty"></span><input name="qty" type="number" min="1" step="1" inputmode="numeric"></label>
+      <p id="stock-preview" class="stock-preview" role="status" hidden></p>
+      <label id="add-product-row" class="check" hidden><input type="checkbox" name="add_product"><span data-label="add_to_inv"></span></label>
+      <label><span data-label="f_amount"></span><input name="amount" type="number" min="0.01" max="100000" step="0.01" inputmode="decimal" aria-describedby="amount-hint"></label>
+      <p id="amount-hint" class="hint" hidden></p>
+      <div class="row">
+        <button class="btn" type="submit" data-label="tama"></button>
+        <button class="btn secondary" type="button" id="ayusin" data-label="ayusin"></button>
+      </div>
+    </form>
+  </main>
+
+  <script src="./js/labels.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/parser.js"></script>
+  <script src="./js/voice.js"></script>
+  <script src="./js/home.js"></script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>

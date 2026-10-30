@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1f7a4d">
+  <title>Inventory – KitaKlaro</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <script src="./js/nav.js"></script>
+  <main>
+    <h2 data-label="ubos_title"></h2>
+    <details id="add-product" class="card product add-product">
+      <summary data-label="add_product"></summary>
+    </details>
+    <p id="message" class="message" role="status"></p>
+    <ul id="inventory-list" class="list"></ul>
+  </main>
+
+  <script src="./js/labels.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/ubos.js"></script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>
