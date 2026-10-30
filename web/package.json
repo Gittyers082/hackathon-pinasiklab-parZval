@@ -1,0 +1,27 @@
+{
+  "name": "kitaklaro-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KitaKlaro landing page and login: Next.js, Tailwind, Framer Motion.",
+  "scripts": {
+    "dev": "next dev -p 3100",
+    "build": "next build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "framer-motion": "^14.8.0",
+    "lucide-react": "^1.65.0",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.0"
+  }
+}
