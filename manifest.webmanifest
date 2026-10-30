@@ -1,0 +1,60 @@
+{
+  "name": "KitaKlaro — Benta at Stock Tracker",
+  "short_name": "KitaKlaro",
+  "description": "Bilisang talaan ng benta, stock at utang para sa sari-sari store. Gumagana offline.",
+  "lang": "fil",
+  "dir": "ltr",
+  "start_url": "./app.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "orientation": "portrait",
+  "background_color": "#F4F6F5",
+  "theme_color": "#0B6E4F",
+  "categories": [
+    "business",
+    "finance",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Bagong benta",
+      "url": "./app.html#benta"
+    },
+    {
+      "name": "Stock",
+      "url": "./app.html#stock"
+    },
+    {
+      "name": "Utang",
+      "url": "./app.html#utang"
+    }
+  ]
+}

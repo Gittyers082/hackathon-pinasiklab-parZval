@@ -1,0 +1,538 @@
+/* ==========================================================================
+   KitaKlaro — design tokens
+   Colours sampled from the KitaKlaro mark, then assigned by meaning.
+   Rule: colour lands on data, never on chrome. Target ~3-5% coloured pixels.
+   Baseline: Chrome 90 / Android Go. No oklch, color-mix, :has or @container.
+   ========================================================================== */
+
+:root {
+  /* --- ground & ink -------------------------------------------------------
+     Deliberately NOT cream (#FAF5EC). A yellow-cream ground paired with a
+     terracotta accent is the most generated look of 2025-26; the stone
+     below keeps the warmth at a fraction of the chroma. */
+  --ground:        #F2F1EE;
+  --surface:       #FFFFFF;
+  --surface-sunk:  #EAE8E3;
+  --line:          #E0DDD6;
+  --line-strong:   #CBC6BC;
+
+  --ink:           #191417;
+  --ink-muted:     #6B6560;
+  --ink-faint:     #938C85;
+
+  /* --- brand hues, straight off the mark --------------------------------- */
+  --oxblood:        #5A1216;  /* badge — brand hue, reserved for the lead number */
+  --oxblood-soft:   #F3E7E6;
+  /* The lead number's hue is its own token: oxblood cannot survive being
+     lightened for a dark ground without turning pastel pink, so on dark it
+     steps back to ink and the deltas carry the colour instead. */
+  --lead-hue:       var(--oxblood);
+  --periwinkle:     #685CA8;  /* the mark's unused colour; secondary data */
+  --periwinkle-soft:#ECEAF5;
+  --green:          #0B764F;  /* benta, money in */
+  --green-soft:     #E3F0EA;
+  --vermilion:      #D8431F;  /* paubos only — never decoration */
+  --vermilion-soft: #FBE7E1;
+  --amber:          #C97F07;  /* low stock; darkened to hold AA on white */
+  --amber-soft:     #FBEFD6;
+  --blue:           #226298;
+  /* The mark's gold, used as a full field behind the one number that
+     matters. One field per screen — if everything is loud, nothing is. */
+  --gold:           #FDC33C;
+  --gold-ink:       #2A1D06;
+
+  /* --- type ---------------------------------------------------------------
+     Both faces are named first and fall back to what the device has. Neither
+     is bundled: ITC Serif Gothic and Helvetica Neue are licensed faces, so
+     they cannot be self-hosted without buying the webfont licence. On Android
+     — the whole target audience — neither is installed, so those phones get
+     the fallback. See the note in README before treating this as finished. */
+  --face-display: "ITC Serif Gothic", "Serif Gothic Std", "Serif Gothic",
+                  Georgia, "Times New Roman", serif;
+  --face-ui: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, system-ui, sans-serif;
+
+  /* Four steps, far apart. A graded 16/18/20/24/28 scale reads as mush. */
+  --t-lead:  2.75rem;   /* 44px — the one number the screen exists to answer */
+  --t-title: 1.25rem;   /* 20px */
+  --t-body:  1rem;      /* 16px */
+  --t-small: 0.8125rem; /* 13px */
+
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;
+  --sp-4: 16px; --sp-5: 24px; --sp-6: 32px;
+
+  --radius: 14px;       /* soft, app-like; matches the reference shapes */
+  --radius-sm: 8px;
+  --radius-field: 28px; /* the big sweep under a colour field */
+  --radius-pill: 999px;
+  --tap: 48px;          /* minimum touch target */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #17141A; --surface: #211D24; --surface-sunk: #2C2732;
+    --line: #342E3A; --line-strong: #4A4252;
+    --ink: #F3F0EE; --ink-muted: #ADA4AE; --ink-faint: #837A86;
+    --oxblood: #D98D93; --oxblood-soft: #38191D;
+    --lead-hue: var(--ink);
+    --periwinkle: #A99CE6; --periwinkle-soft: #272244;
+    --green: #4FC093; --green-soft: #12301F;
+    --vermilion: #FF8F6B; --vermilion-soft: #3B1A14;
+    --amber: #F0B544; --amber-soft: #352611;
+    --blue: #7FB6E8;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #17141A; --surface: #211D24; --surface-sunk: #2C2732;
+  --line: #342E3A; --line-strong: #4A4252;
+  --ink: #F3F0EE; --ink-muted: #ADA4AE; --ink-faint: #837A86;
+  --oxblood: #D98D93; --oxblood-soft: #38191D;
+  --lead-hue: var(--ink);
+  --periwinkle: #A99CE6; --periwinkle-soft: #272244;
+  --green: #4FC093; --green-soft: #12301F;
+  --vermilion: #FF8F6B; --vermilion-soft: #3B1A14;
+  --amber: #F0B544; --amber-soft: #352611;
+  --blue: #7FB6E8;
+}
+
+/* ==========================================================================
+   base
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--face-ui);
+  font-size: var(--t-body);
+  line-height: 1.45;
+  /* room for the fixed tab bar + the gesture area on tall Androids */
+  padding-bottom: calc(var(--tap) + 28px + env(safe-area-inset-bottom, 0px));
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 700; line-height: 1.2; }
+p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+dl, dd { margin: 0; }
+
+button { font: inherit; color: inherit; }
+
+:focus-visible { outline: 3px solid var(--periwinkle); outline-offset: 2px; }
+
+.skip {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--ink); color: var(--surface); padding: var(--sp-3);
+}
+.skip:focus { left: 0; z-index: 60; }
+
+.muted { color: var(--ink-muted); }
+.pad { padding: var(--sp-4); }
+
+/* Amounts: tabular, so columns of pesos line up and digits do not jitter
+   as a total counts up during a rush. */
+.amt {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   chrome — deliberately colourless, so the data carries the colour
+   ========================================================================== */
+
+/* Two rows, because at 360px a mark, a shop name and a status chip on one
+   line truncate the shop name to "Aling N...". */
+.appbar {
+  padding: calc(env(safe-area-inset-top, 0px) + var(--sp-3)) var(--sp-4) var(--sp-3);
+  background: var(--ground);
+  border-bottom: 1px solid var(--line);
+}
+
+/* --------------------------------------------------------------------------
+   the colour field — the screen's one loud surface
+   -------------------------------------------------------------------------- */
+
+.field-head {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-radius: 0 0 var(--radius-field) var(--radius-field);
+  padding: calc(env(safe-area-inset-top, 0px) + var(--sp-4)) var(--sp-4) var(--sp-5);
+  /* The field stays gold in dark mode, so the tokens drawn on it are pinned
+     to their light values here. Letting --oxblood lighten put the lead
+     number at 1.6:1 against the gold. */
+  --oxblood: #5A1216;
+  --lead-hue: #5A1216;
+}
+.field-head__top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-3); margin-bottom: var(--sp-5);
+}
+.field-head .mark b { color: #7A2E12; }
+/* The greeting and the shop name are separate elements: nesting a UI-face
+   span inside the display-face heading reads as a typeface switch mid-line. */
+.field-head__hello {
+  font-size: var(--t-small); opacity: 0.72; margin-bottom: 2px;
+}
+.field-head__greet {
+  font-family: var(--face-display); font-weight: 800;
+  font-size: 1.5rem; letter-spacing: -0.02em; line-height: 1.1;
+}
+.field-head .lead { padding: var(--sp-5) 0 0; }
+.field-head .lead__label { color: rgba(42, 29, 6, 0.68); }
+.field-head .lead__value { color: var(--oxblood); }
+.field-head .lead__delta { color: rgba(42, 29, 6, 0.78); }
+.field-head .up { color: #0A5C3E; }
+.field-head .down { color: #A3260B; }
+.field-head .figures { margin: var(--sp-4) 0 0; border-top-color: rgba(42, 29, 6, 0.22); }
+.field-head .figures > div + div { border-left-color: rgba(42, 29, 6, 0.22); }
+.field-head .figures dt { color: rgba(42, 29, 6, 0.68); }
+
+/* the chip sits on gold here, so it needs its own ground */
+.field-head .chip { background: rgba(42, 29, 6, 0.12); color: var(--gold-ink); }
+.field-head .chip--live { background: rgba(10, 92, 62, 0.14); color: #0A5C3E; }
+
+/* --------------------------------------------------------------------------
+   quick actions — four round targets, the jobs done most often
+   -------------------------------------------------------------------------- */
+
+.quick {
+  display: flex; justify-content: space-between; gap: var(--sp-2);
+  padding: var(--sp-5) var(--sp-4) var(--sp-2);
+}
+.quick__item {
+  flex: 1 1 0;
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+  background: none; border: 0; padding: 0; cursor: pointer;
+  color: var(--ink); text-decoration: none;
+  font-size: var(--t-small); font-weight: 600;
+}
+.quick__icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--line);
+}
+.quick__icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.75; }
+.quick__item--go .quick__icon { background: var(--ink); border-color: var(--ink); color: var(--ground); }
+.quick__item:active .quick__icon { background: var(--surface-sunk); }
+.appbar__top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+
+.mark {
+  font-family: var(--face-display);
+  font-weight: 800;
+  font-size: 1.0625rem;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.mark b { color: var(--oxblood); font-weight: 800; }
+
+.appbar__store h1 { font-size: var(--t-title); font-weight: 700; letter-spacing: -0.01em; }
+.appbar__store p { font-size: var(--t-small); color: var(--ink-muted); }
+
+.chip {
+  display: inline-block; padding: 2px var(--sp-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--t-small); font-weight: 600;
+  background: var(--surface-sunk); color: var(--ink-muted);
+}
+.chip--offline { background: var(--amber-soft); color: var(--amber); }
+.chip--live    { background: var(--green-soft); color: var(--green); }
+
+/* ==========================================================================
+   the lead answer — "magkano ang kita ko ngayon?"
+   Type, not a tile: no icon in a circle, no sparkline, no card.
+   ========================================================================== */
+
+.lead { padding: var(--sp-5) var(--sp-4) var(--sp-4); }
+.lead__label {
+  font-size: var(--t-small); font-weight: 600;
+  color: var(--ink-muted);
+}
+.lead__value {
+  font-family: var(--face-display);
+  font-weight: 800;
+  font-size: var(--t-lead);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--lead-hue);     /* the one brand hue, on the main data element */
+  margin-top: var(--sp-2);
+}
+.lead__delta { margin-top: var(--sp-2); font-size: var(--t-small); }
+.lead__delta b { font-weight: 600; }
+.up   { color: var(--green); }
+.down { color: var(--vermilion); }
+
+/* Two figures under the lead. Rules and alignment, no tiles. */
+.figures {
+  display: flex;
+  border-top: 1px solid var(--line);
+  margin: 0 var(--sp-4);
+}
+.figures > div { flex: 1 1 0; padding: var(--sp-3) 0; }
+.figures > div + div { border-left: 1px solid var(--line); padding-left: var(--sp-4); }
+.figures dt { font-size: var(--t-small); color: var(--ink-muted); }
+.figures dd { margin-top: 2px; font-size: var(--t-title); font-weight: 700; }
+
+/* ==========================================================================
+   sections, rows, cards
+   ========================================================================== */
+
+.section { margin-top: var(--sp-5); }
+.section__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--sp-3); padding: 0 var(--sp-4) var(--sp-2);
+}
+.section__head h2 { font-size: var(--t-title); letter-spacing: -0.01em; }
+.section__head a { font-size: var(--t-small); color: var(--blue); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  /* no drop shadow: separation is a line or a tone step */
+}
+
+/* Rows sit in an inset rounded card rather than running edge to edge. */
+.rows {
+  background: var(--surface);
+  margin: 0 var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.row {
+  display: flex; align-items: center; gap: var(--sp-3);
+  min-height: var(--tap);
+  padding: var(--sp-3) var(--sp-4);
+  width: 100%; text-align: left;
+  background: none; border: 0;
+  border-bottom: 1px solid var(--line);
+}
+.row:last-child { border-bottom: 0; }
+.row__main { flex: 1 1 auto; min-width: 0; }
+.row__name { display: block; font-weight: 500; }
+.row__meta { display: block; font-size: var(--t-small); color: var(--ink-muted); }
+.row__amt { font-weight: 600; white-space: nowrap; } /* numbers right-aligned */
+
+/* Stock states. The band of colour IS the warning, so nothing decorative
+   on this screen is allowed to use amber or vermilion. */
+.state { border-left: 3px solid transparent; }
+.state--low { border-left-color: var(--amber); }
+.state--out { border-left-color: var(--vermilion); }
+.state__tag {
+  font-size: var(--t-small); font-weight: 700;
+  padding: 1px var(--sp-2); border-radius: var(--radius);
+}
+.state--low .state__tag { background: var(--amber-soft); color: var(--amber); }
+.state--out .state__tag { background: var(--vermilion-soft); color: var(--vermilion); }
+
+/* ==========================================================================
+   buttons — one filled button per screen: the job the screen exists for
+   ========================================================================== */
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--tap); padding: 0 var(--sp-4);
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+  background: var(--surface); color: var(--ink);
+  font-weight: 600; cursor: pointer;
+  text-decoration: none; /* .btn is used on both <button> and <a> */
+}
+/* Colour belongs to the data, so the action is ink. A black pill reads as
+   "press this" without competing with the gold field or the lead number. */
+.btn--primary {
+  background: var(--ink); border-color: var(--ink); color: var(--ground);
+}
+.btn { border-radius: var(--radius-pill); }
+.btn--block { display: flex; width: 100%; }
+.btn--ghost { background: none; border-color: transparent; color: var(--ink-muted); }
+
+
+/* The record-a-sale control: the one thing to do next, reachable by thumb. */
+.capture { padding: var(--sp-4); display: grid; gap: var(--sp-2); }
+.capture__hint { font-size: var(--t-small); color: var(--ink-muted); }
+
+/* ==========================================================================
+   tab bar — the active item is a change of text colour and a 2px rule,
+   not a filled coloured pill
+   ========================================================================== */
+
+.tabbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: flex;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.tab {
+  flex: 1 1 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  min-height: var(--tap); padding: var(--sp-2) 0 var(--sp-1);
+  color: var(--ink-muted); text-decoration: none;
+  font-size: var(--t-small);
+  border-top: 2px solid transparent;
+  margin-top: -1px;
+}
+.tab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.75; }
+.tab[aria-current="page"] { color: var(--ink); border-top-color: var(--oxblood); }
+
+/* ==========================================================================
+   motion — one move, and none at all if the person asks for none
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   screen parts
+   ========================================================================== */
+
+.hint { font-size: var(--t-small); color: var(--ink-muted); }
+.is-utang { color: var(--periwinkle); }
+.row__unit { font-weight: 400; color: var(--ink-faint); font-size: var(--t-small); }
+.row__trail { display: flex; align-items: center; gap: var(--sp-3); }
+
+.btn--mini {
+  min-height: 34px; padding: 0 var(--sp-3);
+  font-size: var(--t-small); border-radius: var(--radius-pill);
+}
+
+/* --- Benta: the product grid ----------------------------------------------
+   Two columns at 360px with 48px+ targets. Tapping is the fallback for when
+   speaking is not possible — a noisy street, a sleeping baby. */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-2);
+  padding: 0 var(--sp-4) var(--sp-4);
+}
+@media (min-width: 520px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+.tile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  min-height: 84px; padding: var(--sp-3);
+  text-align: left; cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.tile:active { background: var(--surface-sunk); }
+.tile__name { font-weight: 600; font-size: 0.9375rem; line-height: 1.2; }
+.tile__price { margin-top: auto; font-weight: 700; }
+.tile__stock { font-size: var(--t-small); color: var(--ink-faint); }
+.tile__stock--low { color: var(--amber); font-weight: 600; }
+.tile__stock--out { color: var(--vermilion); font-weight: 600; }
+.tile--empty { opacity: 0.45; }
+
+/* --- Benta: the running cart, above the tab bar --------------------------- */
+
+body.has-cart { padding-bottom: calc(var(--tap) * 2 + 76px + env(safe-area-inset-bottom, 0px)); }
+
+.cart {
+  position: fixed; left: 0; right: 0; z-index: 45;
+  bottom: calc(var(--tap) + 12px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line);
+}
+.cart__summary {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; min-height: var(--tap); padding: 0 var(--sp-4);
+  background: none; border: 0; cursor: pointer;
+  font-weight: 600;
+}
+.cart__summary strong { font-size: var(--t-title); }
+.cart__lines { padding: 0 var(--sp-4) var(--sp-2); }
+.cart__lines li {
+  display: flex; justify-content: space-between; gap: var(--sp-3);
+  padding: var(--sp-1) 0; font-size: var(--t-small); color: var(--ink-muted);
+}
+.cart__actions {
+  display: flex; gap: var(--sp-2); padding: 0 var(--sp-4) var(--sp-3);
+}
+.cart__actions .btn { flex: 1 1 0; }
+.cart__actions .btn--ghost { flex: 0 0 auto; }
+
+/* --- Stock: the adjuster -------------------------------------------------- */
+
+.stepper { display: flex; align-items: center; gap: var(--sp-1); }
+.stepper__btn {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; line-height: 1;
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+  cursor: pointer;
+}
+.stepper__btn:active { background: var(--surface-sunk); }
+.stepper__n { min-width: 2.5ch; text-align: center; font-weight: 700; }
+
+/* --- Ulat: period switch and the bar chart -------------------------------- */
+
+/* Free-standing pills rather than a sunken track: the selected one is a
+   filled ink pill, the rest are outlines. */
+.segmented {
+  display: flex; gap: var(--sp-2);
+  margin: var(--sp-4) 0 0;
+  padding: 0 var(--sp-4);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.segmented::-webkit-scrollbar { display: none; }
+.segmented__opt {
+  flex: 0 0 auto; min-height: 42px; padding: 0 var(--sp-4);
+  background: var(--surface); color: var(--ink-muted);
+  border: 1px solid var(--line); border-radius: var(--radius-pill);
+  font-size: 0.9375rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+}
+.segmented__opt.is-on { background: var(--ink); border-color: var(--ink); color: var(--ground); }
+
+/* One series, so no legend and no gridlines. The current day carries the
+   only hue; the rest are a neutral tone step. */
+.bars {
+  display: flex; align-items: flex-end; gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-4);
+}
+.bars__col { flex: 1 1 0; display: flex; flex-direction: column; min-width: 0; }
+/* The track carries an explicit height so the bars' percentages have
+   something definite to resolve against. Measuring them against a box that
+   also holds the day label shrinks the tallest bars and flattens the series. */
+.bars__track { height: 112px; display: flex; align-items: flex-end; }
+.bars__bar {
+  width: 100%; flex: 0 0 auto;
+  background: var(--surface-sunk);
+  border-radius: var(--radius-sm);
+  min-height: 6px;
+}
+.bars__bar--now { background: var(--gold); }
+.bars__label {
+  margin-top: var(--sp-2); text-align: center;
+  font-size: var(--t-small); color: var(--ink-muted);
+}
+
+/* --- toast ---------------------------------------------------------------- */
+
+.toast {
+  position: fixed; z-index: 60;
+  left: var(--sp-4); right: var(--sp-4);
+  bottom: calc(var(--tap) + 20px + env(safe-area-inset-bottom, 0px));
+  margin: 0; padding: var(--sp-3) var(--sp-4);
+  background: var(--ink); color: var(--ground);
+  border-radius: var(--radius);
+  font-size: 0.9375rem; text-align: center;
+}

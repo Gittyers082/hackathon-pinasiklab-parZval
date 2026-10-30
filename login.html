@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fil">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mag-login — KitaKlaro</title>
+<meta name="description" content="Pumasok sa iyong tindahan sa KitaKlaro.">
+<meta name="theme-color" content="#F2F1EE">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/landing.css">
+</head>
+<body class="marketing">
+
+<div class="auth">
+
+  <!-- Shown from 900px up; on a phone it would only push the form below the fold. -->
+  <aside class="auth__brand">
+    <p class="mark" style="color:var(--ink-invert)">Kita<b style="color:#FDC33C">Klaro</b></p>
+    <p class="display auth__quote">Hindi na hula ang kita mo sa dulo ng araw.</p>
+    <p style="font-size:var(--t-small);color:rgba(251,247,239,.6)">
+      Naka-save sa phone. Magsi-sync pag may data.
+    </p>
+  </aside>
+
+  <main class="auth__panel">
+    <form class="auth__form" method="post" action="app.html" novalidate>
+      <!-- the brand panel is hidden below 900px, so the mark goes here -->
+      <p class="mark auth__mark">Kita<b>Klaro</b></p>
+
+      <!-- Line art of the thing being replaced: the store window and the
+           kwaderno. Inline so it costs no extra request. -->
+      <svg class="auth__art" viewBox="0 0 220 120" role="img" aria-label="Sari-sari store at kwaderno">
+        <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M26 46h92v58H26z"/>
+          <path d="M26 46l10-20h72l10 20"/>
+          <path d="M44 104V72h26v32"/>
+          <path d="M86 62h20v20H86z"/>
+          <path d="M34 36h76" stroke-dasharray="4 7"/>
+          <path d="M132 24v8M148 24v8M164 24v8"/>
+          <path d="M126 32h12v14h-12zM142 32h12v14h-12zM158 32h12v14h-12z"/>
+          <path d="M140 66h58v38h-58z"/>
+          <path d="M152 78h34M152 88h34M152 98h20"/>
+          <path d="M140 66l6-6h58l-6 6"/>
+          <circle cx="192" cy="40" r="13"/>
+          <path d="M188 35h7M188 45h7M191 31v18"/>
+        </g>
+      </svg>
+      <h1 class="display">Pumasok sa tindahan</h1>
+      <p>Gamitin ang numerong ginamit mo sa pag-register.</p>
+
+      <div class="field">
+        <label for="phone">Numero ng cellphone</label>
+        <!-- tel + numeric keypad: faster than a full keyboard on a cheap phone -->
+        <input id="phone" name="phone" type="tel" inputmode="numeric"
+               autocomplete="tel-national" placeholder="0917 123 4567"
+               maxlength="13" required>
+      </div>
+
+      <div class="field">
+        <label for="pin">6-digit PIN</label>
+        <input id="pin" name="pin" type="password" inputmode="numeric"
+               autocomplete="current-password" pattern="[0-9]*"
+               maxlength="6" required>
+        <p class="field__hint">
+          PIN, hindi password. Mas madaling tandaan at mas mabilis i-type
+          habang may pila sa counter.
+        </p>
+      </div>
+
+      <button class="btn btn--primary btn--block" type="submit">Pumasok</button>
+
+      <p class="auth__alt">
+        Nakalimutan ang PIN? <a href="#tulong">Magpadala ng code sa SMS</a>
+      </p>
+
+      <p class="divider">o</p>
+
+      <a class="btn btn--block" href="app.html">Subukan muna ang demo</a>
+
+      <p class="auth__alt">
+        Wala pang tindahan? <a href="#gumawa">Gumawa ng bago</a>
+      </p>
+    </form>
+  </main>
+
+</div>
+
+</body>
+</html>

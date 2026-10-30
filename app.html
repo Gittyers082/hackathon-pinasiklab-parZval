@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fil">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KitaKlaro</title>
+<meta name="description" content="Talaan ng benta, stock at utang para sa sari-sari store.">
+<meta name="theme-color" content="#F2F1EE">
+<meta name="color-scheme" content="light dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="KitaKlaro">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<a class="skip" href="#view">Lumaktaw sa nilalaman</a>
+
+<main id="view" tabindex="-1">
+  <p class="pad muted">Binubuksan ang talaan&hellip;</p>
+</main>
+
+<!-- Sell screen cart. Lives outside #view so it survives re-renders. -->
+<div class="cart" id="cart" hidden>
+  <button class="cart__summary" id="cart-summary" type="button" aria-expanded="false" aria-controls="cart-lines">
+    <span id="cart-count">0 item</span>
+    <strong class="amt" id="cart-total">&#8369;0.00</strong>
+  </button>
+  <ul class="cart__lines" id="cart-lines" hidden></ul>
+  <div class="cart__actions">
+    <button class="btn btn--ghost" id="cart-clear" type="button">Burahin</button>
+    <button class="btn" id="cart-utang" type="button">Utang</button>
+    <button class="btn btn--primary" id="cart-paid" type="button">Bayad na</button>
+  </div>
+</div>
+
+<nav class="tabbar" aria-label="Mga screen">
+  <a class="tab" href="#kita" data-tab="kita">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+    <span>Kita</span>
+  </a>
+  <a class="tab" href="#benta" data-tab="benta">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18l-2 12H5L3 6zm4 0a5 5 0 0 1 10 0"/></svg>
+    <span>Benta</span>
+  </a>
+  <a class="tab" href="#stock" data-tab="stock">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM4 7l2-3h12l2 3M9 11h6"/></svg>
+    <span>Stock</span>
+  </a>
+  <a class="tab" href="#utang" data-tab="utang">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v10H3zM3 11h18M7 15h4"/></svg>
+    <span>Utang</span>
+  </a>
+  <a class="tab" href="#ulat" data-tab="ulat">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h4"/></svg>
+    <span>Ulat</span>
+  </a>
+</nav>
+
+<p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+
+<script src="js/app.js"></script>
+</body>
+</html>
