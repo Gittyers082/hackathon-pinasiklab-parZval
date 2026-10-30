@@ -1,0 +1,194 @@
+/* KitaKlaro: mobile-first, big tap targets, high contrast, system fonts only. */
+
+:root {
+  --green: #1f7a4d;
+  --green-dark: #155c39;
+  --ink: #111;
+  --muted: #555;
+  --bg: #f4f6f4;
+  --card: #fff;
+  --red: #b3261e;
+  --yellow: #fff3b0;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--ink);
+  background: var(--bg);
+  padding-bottom: 84px; /* room for the bottom nav */
+}
+
+main { max-width: 560px; margin: 0 auto; padding: 16px; }
+
+h1, h2, h3 { margin: 0 0 8px; }
+h2 { font-size: 1.3rem; }
+
+.muted { color: var(--muted); margin: 0; }
+
+/* Header */
+.top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--green);
+  color: #fff;
+}
+.top h1 { font-size: 1.3rem; margin: 0; flex: 1; }
+.top select { min-height: 48px; font-size: 16px; border-radius: 8px; border: 0; padding: 0 8px; }
+
+.badge {
+  background: #ffd54f;
+  color: #000;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.kumita { text-align: center; }
+.big-number {
+  font-size: clamp(2.8rem, 14vw, 4.5rem);
+  font-weight: 800;
+  color: var(--green);
+  margin: 8px 0;
+  line-height: 1.1;
+}
+.big-number.negative { color: var(--red); }
+.split { display: flex; justify-content: space-around; gap: 8px; margin: 0; flex-wrap: wrap; }
+
+/* Buttons and inputs */
+.btn {
+  min-height: 48px;
+  padding: 0 20px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--green);
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.btn:active { background: var(--green-dark); }
+.btn.secondary { background: #fff; color: var(--green); border: 2px solid var(--green); }
+.btn:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+  outline: 3px solid #ffb300;
+  outline-offset: 2px;
+}
+
+.mic { width: 100%; min-height: 72px; font-size: 1.3rem; margin-bottom: 12px; }
+.mic.listening { background: var(--red); }
+
+input, select {
+  min-height: 48px;
+  font-size: 16px; /* 16px+ stops iOS from zooming in */
+  padding: 8px 12px;
+  border: 2px solid #999;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+input[readonly], select:disabled { background: #eef2ee; border-color: #ccc; color: var(--ink); opacity: 1; }
+input.weak, select.weak { background: var(--yellow); border-color: #c9a400; }
+
+.type-form { display: flex; gap: 8px; margin-bottom: 8px; }
+.type-form input { flex: 1; }
+
+.message { min-height: 1.4em; font-weight: 600; color: var(--green); }
+.message.error { color: var(--red); }
+
+/* Confirmation card */
+.confirm label { display: block; margin-bottom: 10px; font-weight: 600; }
+.confirm label > span { display: block; margin-bottom: 4px; }
+.row { display: flex; gap: 8px; }
+.row .btn { flex: 1; }
+
+/* Lists */
+.list { list-style: none; margin: 0; padding: 0; }
+.list-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 12px;
+  width: 100%;
+  min-height: 64px;
+  margin-bottom: 8px;
+  padding: 12px 16px;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  background: var(--card);
+  border: 0;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+button.list-row { cursor: pointer; }
+.list-row .name { font-weight: 700; text-transform: capitalize; }
+.list-row b { font-size: 1.2rem; color: var(--red); }
+.list-row small { grid-column: 1 / -1; color: var(--muted); }
+
+.restock { grid-template-columns: 1fr auto; }
+.restock small { grid-column: auto; }
+.restock input { grid-column: 1; }
+.restock b.zero { color: var(--red); }
+
+/* "Ipakita kay suki" full screen */
+.suki-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  overflow-y: auto;
+  padding: 24px 16px 32px;
+  background: #fff;
+  text-align: center;
+}
+.suki-name { font-size: 2rem; font-weight: 800; text-transform: capitalize; margin: 16px 0 0; }
+.suki-screen .big-number { color: var(--red); font-size: clamp(3rem, 18vw, 5.5rem); }
+.suki-screen h3 { margin-top: 24px; }
+.history { list-style: none; padding: 0; margin: 0 auto 24px; max-width: 480px; text-align: left; }
+.history li { padding: 10px 0; border-bottom: 1px solid #ddd; white-space: pre-wrap; }
+.history li.bayad { color: var(--green); }
+.suki-screen .btn { width: 100%; max-width: 480px; }
+
+/* Bottom nav */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  background: #fff;
+  border-top: 1px solid #ccc;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bottom-nav a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  font-size: 1.3rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+.bottom-nav a span { font-size: 0.85rem; font-weight: 600; }
+.bottom-nav a[aria-current="page"] { color: var(--green); background: #e6f2ec; }

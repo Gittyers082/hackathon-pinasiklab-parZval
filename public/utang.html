@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1f7a4d">
+  <title>Utang – KitaKlaro</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>KitaKlaro</h1>
+    <span id="demo-badge" class="badge" data-label="demo" hidden></span>
+    <select id="lang" aria-label="Wika / Language">
+      <option value="tl">Tagalog</option>
+      <option value="ilo">Ilocano</option>
+      <option value="en">English</option>
+    </select>
+  </header>
+
+  <main>
+    <h2 data-label="utang_title"></h2>
+    <p id="message" class="message" role="status"></p>
+    <ul id="utang-list" class="list"></ul>
+  </main>
+
+  <!-- "Ipakita kay suki": big, clean screen the owner shows the customer -->
+  <section id="suki-screen" class="suki-screen" hidden>
+    <p id="suki-name" class="suki-name"></p>
+    <p class="muted" data-label="balance"></p>
+    <p id="suki-balance" class="big-number"></p>
+    <h3 data-label="history"></h3>
+    <ul id="suki-history" class="history"></ul>
+    <button id="suki-close" class="btn" type="button" data-label="close"></button>
+  </section>
+
+  <nav class="bottom-nav">
+    <a href="./index.html">🏠<span data-label="nav_home"></span></a>
+    <a href="./utang.html" aria-current="page">📒<span data-label="nav_utang"></span></a>
+    <a href="./ubos.html">📦<span data-label="nav_ubos"></span></a>
+  </nav>
+
+  <script src="./js/labels.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/utang.js"></script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>
