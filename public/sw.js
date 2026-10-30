@@ -1,7 +1,7 @@
 // Service worker: makes the app open offline. API calls are never cached.
 // Changed a file? Bump the version (kitaklaro-v2, ...) so phones get the new copy.
 
-const CACHE = 'kitaklaro-v4';
+const CACHE = 'kitaklaro-v6';
 const FILES = [
   './',
   './index.html',

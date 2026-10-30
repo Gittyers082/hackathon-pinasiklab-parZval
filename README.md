@@ -67,7 +67,7 @@ If you see `{"error":"Server error"}`, check `.env` and that the SQL scripts ran
 | `api/utang.php` | GET | everyone with balance > 0, biggest first |
 | `api/utang.php?name=...` | GET | `{name, balance, history[]}` |
 | `api/utang.php` | POST | `{name, amount, type:'utang'\|'bayad', item}` |
-| `api/entries.php` | POST | `{type:'benta'\|'gastos', item, qty, amount}` (benta lowers product stock) |
+| `api/entries.php` | POST | `{type:'benta'\|'gastos', item, qty, amount}` (benta lowers, gastos raises the matching product's stock) |
 | `api/entries.php?today=1` | GET | `{benta, gastos, kumita}` in centavos |
 | `api/products.php` | GET | all products |
 | `api/products.php?low=1` | GET | products where stock ≤ low_at |

@@ -22,11 +22,11 @@ try {
         $stmt = $pdo->prepare('INSERT INTO entries (type, item, qty, centavos) VALUES (?, ?, ?, ?)');
         $stmt->execute([$type, $item, $qty, $centavos]);
         $id = (int) $pdo->lastInsertId();
-        if ($type === 'benta') {
-            // Only touches a row if the item matches a product name.
-            $stmt = $pdo->prepare('UPDATE products SET stock = GREATEST(stock - ?, 0) WHERE name = ?');
-            $stmt->execute([$qty, $item]);
-        }
+        // Benta lowers stock, gastos (restocking) raises it. Only touches a row if the item matches a product name.
+        $stmt = $pdo->prepare($type === 'benta'
+            ? 'UPDATE products SET stock = GREATEST(stock - ?, 0) WHERE name = ?'
+            : 'UPDATE products SET stock = stock + ? WHERE name = ?');
+        $stmt->execute([$qty, $item]);
         $pdo->commit();
         send_json(['ok' => true, 'id' => $id], 201);
     }

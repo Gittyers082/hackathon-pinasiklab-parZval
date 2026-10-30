@@ -1,11 +1,12 @@
-// "Ubos na" page: products where stock <= low_at, with a quick restock box.
+// Inventory page: every product, lowest stock first, with a quick restock box.
+// Stock at or below low_at shows in red.
 
-const list = document.getElementById('ubos-list');
+const list = document.getElementById('inventory-list');
 const message = document.getElementById('message');
 
-async function loadLow() {
+async function loadInventory() {
   try {
-    const products = await getLowStock();
+    const products = (await getProducts()).sort((a, b) => a.stock - b.stock || a.name.localeCompare(b.name));
     list.innerHTML = '';
     message.textContent = products.length ? '' : t('no_ubos');
     for (const p of products) {
@@ -13,7 +14,7 @@ async function loadLow() {
       li.innerHTML = `
         <form class="list-row restock">
           <span class="name"></span>
-          <small>${t('stock')}: <b class="${p.stock === 0 ? 'zero' : ''}">${Number(p.stock)}</b></small>
+          <small>${t('stock')}: <b class="${p.stock <= p.low_at ? 'low' : ''}">${Number(p.stock)}</b></small>
           <input name="stock" type="number" min="0" step="1" inputmode="numeric" required aria-label="${t('stock')}">
           <button class="btn" type="submit">${t('save')}</button>
         </form>`;
@@ -23,7 +24,7 @@ async function loadLow() {
         try {
           await setStock(p.name, Number(event.target.elements.stock.value));
           message.textContent = t('saved');
-          loadLow();
+          loadInventory();
         } catch (e) {
           message.textContent = e.message || t('error');
         }
@@ -35,4 +36,4 @@ async function loadLow() {
   }
 }
 
-loadLow();
+loadInventory();

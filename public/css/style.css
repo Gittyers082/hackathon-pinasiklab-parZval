@@ -148,7 +148,8 @@ button.list-row { cursor: pointer; }
 .restock { grid-template-columns: 1fr auto; }
 .restock small { grid-column: auto; }
 .restock input { grid-column: 1; }
-.restock b.zero { color: var(--red); }
+.restock b { color: var(--green); }
+.restock b.low { color: var(--red); }
 
 /* "Ipakita kay suki" full screen */
 .suki-screen {

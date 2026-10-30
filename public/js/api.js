@@ -81,6 +81,7 @@ function addEntry({ type, item, qty, amount }) {
     db.entries.push({ type, item: clean(item), qty, centavos: Math.round(amount * 100), created_at: now() });
     const product = db.products.find(p => p.name === clean(item));
     if (type === 'benta' && product) product.stock = Math.max(product.stock - qty, 0);
+    if (type === 'gastos' && product) product.stock += qty;
     demoSave(db);
     return { ok: true };
   });
