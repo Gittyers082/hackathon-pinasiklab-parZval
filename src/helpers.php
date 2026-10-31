@@ -34,3 +34,41 @@ function to_centavos($amount): ?int
     $centavos = (int) round($amount * 100);
     return ($centavos > 0 && $centavos <= 10000000) ? $centavos : null;
 }
+
+// Return a safe, actionable error code. Never expose passwords, SQL, stack traces
+// or filesystem paths to the browser. Full details stay in PHP's error log.
+function api_fail(Throwable $error, string $endpoint): void
+{
+    error_log('KitaKlaro ' . $endpoint . ': ' . $error->getMessage());
+
+    $code = 'SERVER_ERROR';
+    $status = 500;
+    $internal = $error->getMessage();
+    if ($internal === 'KK_DB_CONFIG_MISSING') {
+        $code = 'DB_CONFIG_MISSING';
+        $status = 503;
+    } elseif ($internal === 'KK_DB_CONFIG_INVALID') {
+        $code = 'DB_CONFIG_INVALID';
+        $status = 503;
+    } elseif ($internal === 'KK_DB_DRIVER_MISSING' || stripos($internal, 'could not find driver') !== false) {
+        $code = 'DB_DRIVER_MISSING';
+        $status = 503;
+    } elseif ($error instanceof PDOException) {
+        $number = (int) ($error->errorInfo[1] ?? 0);
+        $sqlState = (string) $error->getCode();
+        if (in_array($number, [1044, 1045, 2002, 2003, 2006, 2013], true) || $sqlState === '28000') {
+            $code = 'DB_CONNECT_FAILED';
+            $status = 503;
+        } elseif ($number === 1049) {
+            $code = 'DB_DATABASE_MISSING';
+            $status = 503;
+        } elseif (in_array($number, [1054, 1146], true) || in_array($sqlState, ['42S02', '42S22'], true)) {
+            $code = 'DB_SCHEMA_MISSING';
+            $status = 503;
+        }
+    } elseif (str_contains($internal, 'undefined function mb_')) {
+        $code = 'PHP_MBSTRING_MISSING';
+    }
+
+    send_json(['error' => 'Server error', 'code' => $code], $status);
+}

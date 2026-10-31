@@ -5,8 +5,8 @@
 
 const LOCALE = lang === 'en' ? 'en-PH' : 'fil-PH';
 const SERIES = [
-  { key: 'benta', color: '#2a78d6' }, // categorical slot 1 (blue)
-  { key: 'gastos', color: '#eb6834' }, // categorical slot 2 (orange)
+  { key: 'benta', color: '#0E7A55' }, // categorical slot 1 (blue)
+  { key: 'gastos', color: '#C8442B' }, // categorical slot 2 (orange)
 ];
 const report = document.getElementById('report');
 const message = document.getElementById('message');

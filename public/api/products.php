@@ -74,6 +74,5 @@ try {
 
     send_json(['error' => 'Bawal ang method na ito'], 405);
 } catch (Throwable $e) {
-    error_log($e->getMessage());
-    send_json(['error' => 'Server error'], 500);
+    api_fail($e, 'products');
 }

@@ -23,7 +23,7 @@ async function call(path, options, demoFn) {
   try {
     res = await fetch('./api/' + path, options);
   } catch (e) {
-    throw new Error('Hindi maabot ang server. Naka-on ba ang WAMP?'); // server unreachable
+    throw new Error(t('network_failure')); // server unreachable
   }
 
   const raw = await res.text();
@@ -33,10 +33,43 @@ async function call(path, options, demoFn) {
   } catch (e) {
     // PHP printed an error page instead of JSON. Show it in the Console (F12) for debugging.
     console.error('API ' + path + ' did not return JSON:\n', raw);
-    throw new Error('Server error: tingnan ang Console (F12)');
+    throw new Error(t('server_invalid'));
   }
-  if (!res.ok) throw new Error(data.error || 'Server error');
+  if (!res.ok) {
+    console.error('KitaKlaro API failure', path, res.status, data);
+    if (res.status >= 500) {
+      // The PHP API gives safe diagnostic codes, never database credentials or SQL.
+      const known = new Set([
+        'DB_CONFIG_MISSING', 'DB_CONFIG_INVALID', 'DB_DRIVER_MISSING',
+        'DB_CONNECT_FAILED', 'DB_DATABASE_MISSING', 'DB_SCHEMA_MISSING',
+        'PHP_MBSTRING_MISSING',
+      ]);
+      const code = known.has(data.code) ? data.code : 'SERVER_ERROR';
+      throw new Error(t('api_' + code));
+    }
+    throw new Error(translateApiError(data.error || (typeof t === 'function' ? t('error') : 'Request failed')));
+  }
   return data;
+}
+
+// Translate familiar PHP validation messages without exposing database internals.
+function translateApiError(message) {
+  if (typeof lang === 'undefined' || lang !== 'en') return message;
+  const replacements = [
+    [/^Mali ang uri$/i, 'Invalid transaction type'],
+    [/^Kulang ang item$/i, 'Item is required'],
+    [/^Kulang ang pangalan$/i, 'Name is required'],
+    [/^Mali ang dami$/i, 'Invalid quantity'],
+    [/^Mali ang halaga$/i, 'Invalid amount'],
+    [/^Mali ang petsa$/i, 'Invalid date'],
+    [/^Kulang ang stock: (.*)$/i, 'Not enough stock: $1'],
+    [/^Walang utang si (.*)$/i, 'No unpaid credit: $1'],
+    [/^Sobra ang bayad\.(.*)$/i, 'Payment exceeds the balance.$1'],
+  ];
+  for (const [pattern, replacement] of replacements) {
+    if (pattern.test(message)) return message.replace(pattern, replacement);
+  }
+  return message;
 }
 
 function post(body) {
@@ -119,6 +152,18 @@ function getToday() {
 function getEntries(from, to) {
   return call(`entries.php?from=${from}&to=${to}`, undefined, () =>
     demoLoad().entries.filter(e => e.created_at >= from && e.created_at < to));
+}
+
+// All four transaction types, returned newest first within the selected date range.
+function getRecords(from, to) {
+  return call('records.php?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to), undefined, () => {
+    const db = demoLoad();
+    return [
+      ...db.entries.map((r, i) => ({ ...r, id: i + 1, name: '' })),
+      ...db.utang.map((r, i) => ({ ...r, id: i + 1, qty: 1 }))
+    ].filter(r => r.created_at.slice(0, 10) >= from && r.created_at.slice(0, 10) < to)
+     .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  });
 }
 
 function getProducts() {

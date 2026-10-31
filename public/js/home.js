@@ -21,14 +21,19 @@ function say(text, isError) {
 async function loadToday() {
   try {
     const today = await getToday();
-    document.getElementById('kumita').textContent = peso(today.kumita);
-    document.getElementById('kumita').classList.toggle('negative', today.kumita < 0);
-    document.getElementById('benta').textContent = peso(today.benta);
-    document.getElementById('gastos').textContent = peso(today.gastos);
+    const kumitaEl = document.getElementById('kumita');
+    const bentaEl = document.getElementById('benta');
+    const gastosEl = document.getElementById('gastos');
+    if (kumitaEl) {
+      kumitaEl.textContent = peso(today.kumita);
+      kumitaEl.classList.toggle('negative', today.kumita < 0);
+    }
+    if (bentaEl) bentaEl.textContent = peso(today.benta);
+    if (gastosEl) gastosEl.textContent = peso(today.gastos);
   } catch (e) {
     say(e.message, true);
   }
-  await loadProducts(); // a benta/gastos changes stock, so refresh the inventory too
+  await loadProducts();
   loadExpiry();
 }
 
@@ -40,11 +45,14 @@ async function loadProducts() {
   }
   renderAlerts(products); // nav.js: red badge + sidebar list
   // <datalist>: typing "sard" in the Item box suggests "sardinas", so names match the inventory.
-  document.getElementById('product-names').replaceChildren(...products.map(p => {
-    const option = document.createElement('option');
-    option.value = p.name;
-    return option;
-  }));
+  const productNames = document.getElementById('product-names');
+  if (productNames) {
+    productNames.replaceChildren(...products.map(p => {
+      const option = document.createElement('option');
+      option.value = p.name;
+      return option;
+    }));
+  }
   updateStockPreview();
 }
 
@@ -111,10 +119,13 @@ function updateAutoAmount() {
 
 // Reminder card: items still in stock that expire within EXPIRY_WARN_DAYS (or already expired).
 function loadExpiry() {
+  const list = document.getElementById('expiry-list');
+  const alertBox = document.getElementById('expiry-alert');
+  if (!list || !alertBox) return;
   const soon = products
     .filter(p => p.expires_on && p.stock > 0 && daysUntil(p.expires_on) <= EXPIRY_WARN_DAYS)
     .sort((a, b) => a.expires_on.localeCompare(b.expires_on));
-  const list = document.getElementById('expiry-list');
+  if (!list) return;
   list.replaceChildren(...soon.map(p => {
     const li = document.createElement('li');
     const name = document.createElement('span');
@@ -123,7 +134,7 @@ function loadExpiry() {
     li.append(name, ` (${p.stock}): ${expiryText(p.expires_on)}`);
     return li;
   }));
-  document.getElementById('expiry-alert').hidden = !soon.length;
+  alertBox.hidden = !soon.length;
 }
 
 // Fields are read-only until the owner taps "Ayusin".
@@ -136,8 +147,11 @@ function setEditable(editable) {
 
 // Utang/bayad need a name; everything but bayad has a qty (an utang qty feeds the auto total).
 function showFieldsForKind() {
+  // If speech-to-text failed to identify the type, keep the name input visible.
+  // The user can correct the type; saving is blocked until one is chosen.
   const isUtang = fields.kind.value === 'utang' || fields.kind.value === 'bayad';
-  confirmForm.querySelector('[data-for="name"]').hidden = !isUtang;
+  const isUnknown = fields.kind.value === '';
+  confirmForm.querySelector('[data-for="name"]').hidden = !isUtang && !isUnknown;
   confirmForm.querySelector('[data-for="qty"]').hidden = fields.kind.value === 'bayad';
 }
 
@@ -203,30 +217,30 @@ confirmForm.addEventListener('submit', async event => {
   const amount = Number(fields.amount.value);
   const qty = fields.qty.value === '' ? 1 : Number(fields.qty.value); // blank means 1; 0 or 2.5 is an error
   if (!kind) return say(t('not_understood'), true);
-  if (!(amount > 0 && amount <= 100000)) return say('Mali ang halaga', true);
+  if (!(amount > 0 && amount <= 100000)) return say(t('amount_invalid'), true);
 
   const tama = confirmForm.querySelector('button[type="submit"]');
   tama.disabled = true; // a double tap must not save the entry twice
   try {
     let result;
     if (kind === 'utang' || kind === 'bayad') {
-      if (!fields.name.value.trim()) return say('Kulang ang pangalan', true);
+      if (!fields.name.value.trim()) return say(t('name_required'), true);
       // The utang table has no qty column, so keep it in the item text: "3 sardinas".
       const item = kind === 'utang' && Number.isInteger(qty) && qty > 1 && itemInput.value.trim()
         ? `${qty} ${itemInput.value.trim()}` : itemInput.value;
       result = await addUtang({ name: fields.name.value, amount, type: kind, item });
     } else {
-      if (!itemInput.value.trim()) return say('Kulang ang item', true);
-      if (!Number.isInteger(qty) || qty < 1 || qty > 10000) return say('Mali ang dami', true);
+      if (!itemInput.value.trim()) return say(t('item_required'), true);
+      if (!Number.isInteger(qty) || qty < 1 || qty > 10000) return say(t('quantity_invalid'), true);
       const addProduct = kind === 'gastos' && addProductBox.checked && !findProduct(itemInput.value);
       result = await addEntry({ type: kind, item: itemInput.value, qty, amount, addProduct });
     }
     confirmForm.hidden = true;
     addProductBox.checked = false;
     document.getElementById('type-box').value = '';
-    // Show the database row number so it's easy to find in Workbench.
-    say(t('saved') + (result && result.id ? ' (#' + result.id + ')' : ''));
-    loadToday();
+    // Save first. Redirect only after the API confirms success.
+    sessionStorage.setItem('kk-record-saved', JSON.stringify({ kind, item: itemInput.value, amount }));
+    window.location.assign('./records.html?tab=' + encodeURIComponent(kind));
   } catch (e) {
     say(e.message || t('error'), true);
   } finally {
@@ -249,4 +263,4 @@ mic.addEventListener('click', () => {
   });
 });
 
-loadToday();
+loadProducts();

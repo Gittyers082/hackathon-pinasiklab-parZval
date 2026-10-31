@@ -1,10 +1,9 @@
 // The ONLY file that calls fetch().
 // Amounts going in are pesos (85.5); amounts coming back are centavos (8550).
-// Demo mode: if the server can't be reached, or we're not on localhost (e.g. GitHub Pages),
-// the same data shapes are read/written in localStorage instead.
+// This public app always uses PHP/MySQL. The docs copy is for static hosting.
 
 const IS_LOCAL = /^(localhost|127\.0\.0\.1|.+\.localhost)$/.test(location.hostname);
-let demoMode = !IS_LOCAL;
+let demoMode = false; // PHP/MySQL is used on localhost and HTTPS phone links.
 
 function showDemoBadge() {
   // One in the mobile top bar, one in the sidebar.
@@ -13,9 +12,9 @@ function showDemoBadge() {
 document.addEventListener('DOMContentLoaded', () => { if (demoMode) showDemoBadge(); });
 
 // Calls the PHP API.
-// On localhost (WAMP) we NEVER fall back to demo mode: if the server or database fails,
+// The public app never falls back to demo mode: if the server or database fails,
 // the error is shown on screen so we know the entry was NOT saved to MySQL.
-// Demo mode (localStorage) is only used when the app runs off localhost, e.g. GitHub Pages.
+// The separate docs copy keeps browser storage for static GitHub Pages hosting.
 async function call(path, options, demoFn) {
   if (demoMode) return demoFn();
 
@@ -23,7 +22,7 @@ async function call(path, options, demoFn) {
   try {
     res = await fetch('./api/' + path, options);
   } catch (e) {
-    throw new Error('Hindi maabot ang server. Naka-on ba ang WAMP?'); // server unreachable
+    throw new Error(t('network_failure')); // server unreachable
   }
 
   const raw = await res.text();
@@ -33,10 +32,43 @@ async function call(path, options, demoFn) {
   } catch (e) {
     // PHP printed an error page instead of JSON. Show it in the Console (F12) for debugging.
     console.error('API ' + path + ' did not return JSON:\n', raw);
-    throw new Error('Server error: tingnan ang Console (F12)');
+    throw new Error(t('server_invalid'));
   }
-  if (!res.ok) throw new Error(data.error || 'Server error');
+  if (!res.ok) {
+    console.error('KitaKlaro API failure', path, res.status, data);
+    if (res.status >= 500) {
+      // The PHP API gives safe diagnostic codes, never database credentials or SQL.
+      const known = new Set([
+        'DB_CONFIG_MISSING', 'DB_CONFIG_INVALID', 'DB_DRIVER_MISSING',
+        'DB_CONNECT_FAILED', 'DB_DATABASE_MISSING', 'DB_SCHEMA_MISSING',
+        'PHP_MBSTRING_MISSING',
+      ]);
+      const code = known.has(data.code) ? data.code : 'SERVER_ERROR';
+      throw new Error(t('api_' + code));
+    }
+    throw new Error(translateApiError(data.error || (typeof t === 'function' ? t('error') : 'Request failed')));
+  }
   return data;
+}
+
+// Translate familiar PHP validation messages without exposing database internals.
+function translateApiError(message) {
+  if (typeof lang === 'undefined' || lang !== 'en') return message;
+  const replacements = [
+    [/^Mali ang uri$/i, 'Invalid transaction type'],
+    [/^Kulang ang item$/i, 'Item is required'],
+    [/^Kulang ang pangalan$/i, 'Name is required'],
+    [/^Mali ang dami$/i, 'Invalid quantity'],
+    [/^Mali ang halaga$/i, 'Invalid amount'],
+    [/^Mali ang petsa$/i, 'Invalid date'],
+    [/^Kulang ang stock: (.*)$/i, 'Not enough stock: $1'],
+    [/^Walang utang si (.*)$/i, 'No unpaid credit: $1'],
+    [/^Sobra ang bayad\.(.*)$/i, 'Payment exceeds the balance.$1'],
+  ];
+  for (const [pattern, replacement] of replacements) {
+    if (pattern.test(message)) return message.replace(pattern, replacement);
+  }
+  return message;
 }
 
 function post(body) {
@@ -119,6 +151,18 @@ function getToday() {
 function getEntries(from, to) {
   return call(`entries.php?from=${from}&to=${to}`, undefined, () =>
     demoLoad().entries.filter(e => e.created_at >= from && e.created_at < to));
+}
+
+// All four transaction types, returned newest first within the selected date range.
+function getRecords(from, to) {
+  return call('records.php?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to), undefined, () => {
+    const db = demoLoad();
+    return [
+      ...db.entries.map((r, i) => ({ ...r, id: i + 1, name: '' })),
+      ...db.utang.map((r, i) => ({ ...r, id: i + 1, qty: 1 }))
+    ].filter(r => r.created_at.slice(0, 10) >= from && r.created_at.slice(0, 10) < to)
+     .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  });
 }
 
 function getProducts() {

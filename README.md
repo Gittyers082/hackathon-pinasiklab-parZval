@@ -86,3 +86,79 @@ If you see `{"error":"Server error"}`, check `.env` and that the SQL scripts ran
 | A | `src/`, `public/api/`, `database/` |
 | B | HTML, `public/js/`, `manifest.json`, `sw.js` |
 | C | `css/`, `labels.js`, `seed.sql`, `notes/` |
+
+
+## Desktop UI + receipt showcase (October 31 integration)
+
+- **Source of truth:** `public/` remains the existing PHP/MySQL + vanilla JavaScript app.
+  This integration deliberately keeps the backend, parser, voice, stock, utang, and report APIs intact.
+- **Desktop:** `public/css/desktop.css` applies the KitaKlaro cream/green/red design,
+  240px sidebar (desktop viewport), and large cards/typography. It also responds to narrow screens.
+- **Font:** Bricolage Grotesque and DM Sans are requested from Google Fonts, with system-font
+  fallbacks when offline. No commercial font files are bundled.
+- **New pages:** `/receipt.html` (camera + hardcoded pitch receipt) and `/kumpirmahin.html`
+  (visual-only confirmation-queue example). The main Dashboard, Inventory, Utang, Ulat,
+  and real entry confirmation flows still operate on the existing functions.
+- **Receipt demo, IMPORTANT:** camera/photo capture and browser image contrast adjustment are real.
+  The text shown after the scan **does NOT use OCR and is NOT extracted from the photo**.
+  It always displays the fixed example from the supplied receipt, whatever photo was taken.
+  A demo label appears on-screen. `Kunan ang Larawan` shows an animated loading state.
+  If camera permissions fail, choose a local image file or `Gamitin ang sample receipt`.
+  `I-save Bilang Gastos` writes one expense of ₱924.25 with the existing `addEntry()` API.
+  Avoid tapping this twice across repeat demo scans if you do not want duplicate expenses.
+- **Kumpirmahin:** sample design-only cards; approving them does not write to the database.
+  The actual entry confirmation still happens on the Dashboard.
+- **Ulat:** eBIR tax draft area is labeled future-feature wireframe, not a filing/calculator.
+- **GitHub Pages:** the updated `docs/` mirrors the `public/` frontend for demo mode.
+  The actual PHP backend lives in `public/api/`, never GitHub Pages.
+- **Offline:** new UI, logo and sample receipt are cached by the updated service worker.
+  Fonts can fall back to system fonts offline. Browser speech recognition often needs the internet.
+  Camera access needs localhost or HTTPS plus permission.
+
+### Apply to your existing Git clone
+
+1. Check out your team's `dev` branch and pull the latest changes first.
+2. Overlay the ZIP contents **without deleting other team files**. This copy does not include `.git`.
+3. Review changes: `git status`, then `git diff`.
+4. Test `/public/index.html` through WAMP or use the GitHub Pages demo `/docs/`.
+5. `git add public docs README.md`, `git commit -m "feat: KitaKlaro desktop UI and receipt pitch demo"`, `git push origin dev`.
+
+The change ZIP is additionally provided so you can merge only the edited files if needed.
+
+
+## Desktop UI + receipt showcase (October 31 integration)
+
+- **Source of truth:** `public/` remains the existing PHP/MySQL + vanilla JavaScript app.
+  This integration deliberately keeps the backend, parser, voice, stock, utang, and report APIs intact.
+- **Desktop:** `public/css/desktop.css` applies the KitaKlaro cream/green/red design,
+  240px sidebar (desktop viewport), and large cards/typography. It also responds to narrow screens.
+- **Font:** Bricolage Grotesque and DM Sans are requested from Google Fonts, with system-font
+  fallbacks when offline. No commercial font files are bundled.
+- **New pages:** `/receipt.html` (camera + hardcoded pitch receipt) and `/kumpirmahin.html`
+  (visual-only confirmation-queue example). The main Dashboard, Inventory, Utang, Ulat,
+  and real entry confirmation flows still operate on the existing functions.
+- **Receipt demo, IMPORTANT:** camera/photo capture and browser image contrast adjustment are real.
+  The text shown after the scan **does NOT use OCR and is NOT extracted from the photo**.
+  It always displays the fixed example from the supplied receipt, whatever photo was taken.
+  A demo label appears on-screen. `Kunan ang Larawan` shows an animated loading state.
+  If camera permissions fail, choose a local image file or `Gamitin ang sample receipt`.
+  `I-save Bilang Gastos` writes one expense of ₱924.25 with the existing `addEntry()` API.
+  Avoid tapping this twice across repeat demo scans if you do not want duplicate expenses.
+- **Kumpirmahin:** sample design-only cards; approving them does not write to the database.
+  The actual entry confirmation still happens on the Dashboard.
+- **Ulat:** eBIR tax draft area is labeled future-feature wireframe, not a filing/calculator.
+- **GitHub Pages:** the updated `docs/` mirrors the `public/` frontend for demo mode.
+  The actual PHP backend lives in `public/api/`, never GitHub Pages.
+- **Offline:** new UI, logo and sample receipt are cached by the updated service worker.
+  Fonts can fall back to system fonts offline. Browser speech recognition often needs the internet.
+  Camera access needs localhost or HTTPS plus permission.
+
+### Apply to your existing Git clone
+
+1. Check out your team's `dev` branch and pull the latest changes first.
+2. Overlay the ZIP contents **without deleting other team files**. This copy does not include `.git`.
+3. Review changes: `git status`, then `git diff`.
+4. Test `/public/index.html` through WAMP or use the GitHub Pages demo `/docs/`.
+5. `git add public docs README.md`, `git commit -m "feat: KitaKlaro desktop UI and receipt pitch demo"`, `git push origin dev`.
+
+The change ZIP is additionally provided so you can merge only the edited files if needed.

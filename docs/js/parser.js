@@ -24,6 +24,8 @@ const NUMBER_WORDS = {
   siyam: 9,
   sampu: 10,
   sampung: 10,
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+  twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90, hundred: 100,
   // Spanish-style units, used in prices like "bente singko" (25)
   uno: 1,
   dos: 2,
@@ -87,9 +89,14 @@ const KIND_WORDS = {
   gumastos: "gastos",
   bumili: "gastos",
   binili: "gastos",
+  sale: "benta", sales: "benta", sold: "benta", sell: "benta",
+  purchase: "gastos", purchased: "gastos", expense: "gastos", expenses: "gastos", spent: "gastos", restock: "gastos",
+  credit: "utang", borrowed: "utang", lend: "utang", lent: "utang", owes: "utang",
+  payment: "bayad", paid: "bayad", repaid: "bayad", repay: "bayad",
 };
 
-const NAME_MARKERS = ["si", "ni", "kay"]; // "utang si ...", "utang ni ..."
+const NAME_MARKERS = ["si", "ni", "kay"]; // Markers can occur even when speech-to-text misses "utang".
+const NAME_TITLES = new Set(["aling", "manang", "mang", "kuya", "ate", "tita", "tito"]); // "utang si ...", "utang ni ..."
 const STOP_WORDS = [
   "si",
   "ni",
@@ -107,6 +114,7 @@ const STOP_WORDS = [
   "piso",
   "php",
   "a",
+  "an", "the", "of", "for", "on", "by", "to", "from", "pesos", "pieces", "piece", "each",
 ];
 
 function toNumber(token) {
@@ -168,24 +176,41 @@ function parseTaglish(text) {
   // 3. Name (only for utang/bayad): words after si/ni/kay, else words right after the kind word.
   let name = "";
   let nameGuessed = false;
-  if (kind === "utang" || kind === "bayad") {
-    let start = tokens.findIndex((t) => NAME_MARKERS.includes(t));
+  // Keep extracting an explicitly named person even if speech recognition missed
+  // the type word. The confirm form will then show Name while the user selects
+  // the correct type; a missing type is NEVER automatically saved.
+  const personMarker = tokens.findIndex((t, i) => NAME_MARKERS.includes(t) && i + 1 < tokens.length);
+  // A common speech-to-text error is "putang" for "utang". Do NOT silently
+  // treat it as a real transaction type. Only use it to recover a possible
+  // person's name and item, leaving Type blank for the user's approval.
+  const uncertainUtang = !kind && tokens[0] === 'putang' &&
+    (personMarker >= 0 || tokens.some(token => NAME_TITLES.has(token)));
+  if (uncertainUtang) used[0] = true;
+  if (kind === "utang" || kind === "bayad" || personMarker >= 0 || uncertainUtang) {
+    let start = personMarker;
     if (start >= 0) {
       used[start] = true;
       start += 1;
     } else if (kindIndex >= 0) {
       start = kindIndex + 1;
       nameGuessed = true;
+      // "Utang 50 aling nena": skip price/qty to reach the title.
+      if (used[start]) {
+        const titleIndex = tokens.findIndex((t, i) => i > kindIndex && NAME_TITLES.has(t) && !used[i]);
+        start = titleIndex;
+      }
+    } else if (uncertainUtang) {
+      start = tokens.findIndex((t, i) => i > 0 && NAME_TITLES.has(t));
+      nameGuessed = true;
     }
     const nameTokens = [];
-    for (
-      let i = start;
-      i >= 0 && i < tokens.length && nameTokens.length < 3;
-      i++
-    ) {
+    for (let i = start; i >= 0 && i < tokens.length && nameTokens.length < 3; i++) {
       if (used[i] || STOP_WORDS.includes(tokens[i])) break;
       nameTokens.push(tokens[i]);
       used[i] = true;
+      // When no explicit si/ni/kay is heard, avoid swallowing the item after
+      // "Aling Nena" / "Mang Tonyo". A longer name still works with a marker.
+      if (personMarker < 0 && NAME_TITLES.has(nameTokens[0]) && nameTokens.length === 2) break;
     }
     name = nameTokens.join(" ");
   }
@@ -343,6 +368,17 @@ const parserTests = [
     expect: { kind: "utang", name: "aling rosing", item: "kape", amount: 100 },
   },
 ];
+
+parserTests.push(
+  { text: "sold 3 sardines 45", expect: { kind: "benta", qty: 3, amount: 45, item: "sardines" } },
+  { text: "expense rice 120", expect: { kind: "gastos", item: "rice", amount: 120 } },
+  { text: "payment si Mang Tonyo 50", expect: { kind: "bayad", name: "mang tonyo", amount: 50 } },
+  { text: "sale two sardines fifty", expect: { kind: "benta", qty: 2, amount: 50 } },
+  { text: "utang aling nena 50 sardinas", expect: { kind: "utang", name: "aling nena", item: "sardinas", amount: 50 } },
+  { text: "utang 50 aling nena sardinas", expect: { kind: "utang", name: "aling nena", item: "sardinas", amount: 50 } },
+  { text: "putang si aling nena 50 sardinas", expect: { kind: null, name: "aling nena", item: "sardinas", needsConfirm: true } },
+  { text: "putang aling nena sardinas", expect: { kind: null, name: "aling nena", item: "sardinas", needsConfirm: true } },
+);
 
 function runParserTests() {
   let failed = 0;

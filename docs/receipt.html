@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fil"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0E7A55"><title>Kunan ng Resibo – KitaKlaro</title>
+<link rel="manifest" href="./manifest.json"><link rel="icon" href="./icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=DM+Sans:opsz,wght@9..40,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css"><link rel="stylesheet" href="./css/desktop.css">  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="KitaKlaro">
+  <link rel="stylesheet" href="./css/pwa.css">
+  <script src="./js/pwa.js"></script>
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head><body>
+<script src="./js/nav.js"></script>
+
+<main class="receipt-page">
+  <header class="page-heading"><div><h1 data-label="receipt_heading"></h1><p class="page-subtitle" data-label="receipt_intro"></p></div></header>
+  <div class="scan-layout">
+    <section class="card scan-workspace">
+      <div class="card-topline"><span class="section-kicker"><span data-label="receipt_step_camera"></span></span><span id="camera-state" class="soft-tag" data-label="receipt_ready"></span></div>
+      <h2 data-label="receipt_aim"></h2>
+      <p class="muted" data-label="receipt_aim_desc"></p>
+      <div class="camera-viewport" id="camera-viewport">
+        <div class="scan-placeholder" id="scan-placeholder"><span class="camera-symbol">▣</span><strong data-label="receipt_placeholder"></strong><span data-label="receipt_placeholder_desc"></span></div>
+        <video id="receipt-video" playsinline autoplay muted hidden></video>
+        <div class="camera-guides" id="camera-guides" hidden><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="scan-controls">
+        <button id="open-camera" type="button" class="btn btn-large"><span data-label="receipt_open"></span></button>
+        <button id="take-photo" type="button" class="btn btn-large" hidden><span data-label="receipt_take"></span></button>
+        <button id="close-camera" type="button" class="btn secondary" hidden data-label="close"></button>
+      </div>
+      <div class="scan-alternatives"><label class="upload-button" for="receipt-file"><span data-label="receipt_upload"></span></label><input id="receipt-file" type="file" accept="image/*" hidden></div>
+      <p id="receipt-message" role="status" class="message"></p>
+    </section>
+    <aside class="card scan-guide">
+      <span class="section-kicker"><span data-label="receipt_how"></span></span>
+      <h2 data-label="receipt_guide_title"></h2>
+      <div class="scan-step"><span>01</span><div><strong data-label="receipt_guide_one"></strong><p data-label="receipt_guide_one_desc"></p></div></div>
+      <div class="scan-step"><span>02</span><div><strong data-label="receipt_guide_two"></strong><p data-label="receipt_guide_two_desc"></p></div></div>
+      <div class="scan-step"><span>03</span><div><strong data-label="receipt_guide_three"></strong><p data-label="receipt_guide_three_desc"></p></div></div>
+      <div id="receipt-guide-total" class="guide-total" hidden><span data-label="receipt_total_sample"></span><strong>₱924.25</strong><small data-label="receipt_total_desc"></small></div>
+    </aside>
+  </div>
+  <div id="scanning-overlay" class="scanning-overlay" role="status" aria-live="polite" hidden><div class="scan-progress-card"><span class="scan-loader"></span><strong data-label="receipt_loading"></strong><p data-label="receipt_loading_desc"></p><div class="scan-progress-track"><span></span></div></div></div>
+  <section id="receipt-results" class="receipt-results" hidden>
+    <div class="result-banner"><div><span class="section-kicker"><span data-label="receipt_result_kicker"></span></span><h2 data-label="receipt_result_title"></h2><p data-label="receipt_result_desc"></p></div><span class="positive-chip" data-label="receipt_result_ready"></span></div>
+    <div class="receipt-results-grid">
+      <section class="card image-result"><h3 data-label="receipt_enhanced"></h3><p class="muted" data-label="receipt_enhanced_desc"></p><img id="receipt-image-enhanced" alt="Enhanced receipt photo" class="receipt-photo"><details><summary data-label="receipt_original"></summary><img id="receipt-image-original" alt="Original receipt photo" class="receipt-photo original-photo"></details></section>
+      <section class="card text-result"><div class="card-topline"><h3 data-label="receipt_text_heading"></h3><span class="soft-tag" data-label="receipt_sample"></span></div><p class="muted" data-label="receipt_text_note"></p>
+      <div class="receipt-text"><pre id="receipt-transcription">TNV#: 0000055286  8 WALK-IN
+Cashier: JULIE ANNE
+-----------------------------------
+Qty    Description(s)         Price
+-----------------------------------
+1 PCS PF STAR CHEESEDOG 1KG    163.50V
+4 PCS LM PC XTRAHOT+CHEESE 60   67.00V
+        @16.75
+4 PCS VTOWN SARD CHILI EO 155    96.00V
+        @24.00
+4 PCS ARGENTINA B/L 170G        98.00V
+        @24.50
+1 PCS REBISCO CHOCO 10'S        62.50V
+1 PCS MAGIC JUNIOR CHOCO 10+2   39.25V
+1 PCS DM TK SWEET BLEND SUP 3   31.50V
+24 PCS BIRCH TREE FORTIFIED 33 222.00V
+        @9.25
+1 PCS GREEN LEAF UI TEA STRONG 134.50V
+-----------------------------------
+             41.00 item(s)
+TOTAL                         924.25
+CASH                         1000.00
+CHANGE                         75.75
+-----------------------------------
+VAT SALE                      825.22
+VAT-EXEMPT SALES                0.00
+VAT ZERO-RATED SALE             0.00
+TOTAL SALE                    924.25
+12% VAT                        99.03</pre></div>
+      <div class="receipt-summary"><span data-label="receipt_total"></span><strong>₱924.25</strong></div>
+      <div class="receipt-actions"><button type="button" class="btn btn-large" id="receipt-save"><span data-label="receipt_save"></span></button><button type="button" class="btn secondary" id="receipt-copy" data-label="receipt_copy"></button><button type="button" class="btn secondary" id="receipt-retake" data-label="receipt_retake"></button></div><p id="receipt-save-message" class="message" role="status"></p></section>
+    </div>
+  </section>
+</main>
+<script src="./js/labels.js"></script><script src="./js/api.js"></script><script src="./js/receipt-demo.js"></script>
+</body></html>

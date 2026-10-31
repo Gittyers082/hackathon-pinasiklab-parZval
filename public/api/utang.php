@@ -73,6 +73,5 @@ try {
     send_json(['error' => 'Bawal ang method na ito'], 405);
 } catch (Throwable $e) {
     if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
-    error_log($e->getMessage());
-    send_json(['error' => 'Server error'], 500);
+    api_fail($e, 'utang');
 }

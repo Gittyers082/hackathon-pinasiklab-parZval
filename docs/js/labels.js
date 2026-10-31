@@ -25,9 +25,12 @@ const LABELS = {
     k_gastos: "Gastos",
     saved: "Na-save!",
     not_understood: "Hindi ko naintindihan. Ayusin ang mga dilaw.",
-    nav_home: "Home",
+    nav_home: "Kita",
+    nav_benta: "Benta",
+    nav_receipt: "Kunan ng Resibo",
+    nav_confirm: "Kumpirmahin",
     nav_utang: "Utang",
-    nav_ubos: "Imbentaryo",
+    nav_ubos: "Stock",
     utang_title: "Sino may utang?",
     show_suki: "Ipakita kay suki",
     close: "Isara",
@@ -110,9 +113,12 @@ const LABELS = {
     k_gastos: "Expense",
     saved: "Saved!",
     not_understood: "I didn't get that. Fix the yellow fields.",
-    nav_home: "Home",
+    nav_home: "Income",
+    nav_benta: "Sales",
+    nav_receipt: "Receipt Scanner",
+    nav_confirm: "Confirm Entries",
     nav_utang: "Credit",
-    nav_ubos: "Inventory",
+    nav_ubos: "Stock",
     utang_title: "Who owes me?",
     show_suki: "Show to customer",
     close: "Close",
@@ -171,11 +177,183 @@ const LABELS = {
   },
 };
 
+// Additional labels for the reorganized five-tab interface.
+Object.assign(LABELS.tl, {
+  nav_home: 'Home', nav_entry: 'Magtala', nav_records: 'Mga Tala', nav_ubos: 'Stock', nav_ulat: 'Ulat',
+  language: 'Wika',
+  home_heading: 'Kita, gastos at stock', today_kicker: 'KITA NGAYONG ARAW',
+  hero_note: 'Benta bawas gastos, para makita ang natira.',
+  quick_kicker: 'MABILISANG PAGTATALA', quick_tag: 'Boses o sulat',
+  quick_title: 'May itatala ka?', quick_desc: 'Benta, utang, bayad o gastos—sabihin o i-type ito.',
+  quick_action: 'Magtala ngayon',
+  receipt_link: 'Kunan ng Resibo', receipt_desc: 'Kuhanan ng larawan at suriin ang gastos.',
+  stock_kicker: 'IMBENTARYO', stock_title: 'Tingnan ang iyong stock',
+  stock_desc: 'Mga produktong malapit nang maubos.', stock_left: 'natitira',
+  see_all: 'Tingnan lahat', stock_ok: 'Walang produktong kailangan i-restock ngayon.',
+  stock_unavailable: 'Hindi makuha ang stock.', loading_inventory: 'Kinukuha ang stock…',
+  recent_kicker: 'MGA HULING TALA', recent_title: 'Mga bagong naitala',
+  recent_desc: 'Mga transaksyong naka-save sa talaan.',
+  recent_empty: 'Wala pang tala ngayong araw.', loading_records: 'Kinukuha ang mga tala…',
+  records_unavailable: 'Hindi makuha ang mga tala.', see_reports: 'Tingnan ang Ulat',
+  units: 'piraso', entry_heading: 'Mabilisang Pagtatala', entry_title: 'Benta, utang, bayad o gastos?',
+  entry_desc: 'Pindutin ang mic at magsalita, o i-type ang iyong tala.',
+  entry_example: '“Benta ng dalawang sardinas, singkwenta pesos.”',
+  confirm_queue_link: 'Suriin ang mga tala',
+  records_heading: 'Mga Tala', records_intro: 'Benta, utang, bayad at gastos sa iisang listahan.',
+  records_empty: 'Wala pang tala sa bahaging ito.', record_count: 'tala',
+  new_record: '+ Magtala', balances_link: 'Tingnan ang mga may utang',
+  saved_in_records: 'Makikita ito sa iyong mga tala.',
+  server_failure: 'Hindi makonekta sa database. Suriin ang .env, MySQL at mga table.',
+  server_invalid: 'Hindi tama ang sagot ng server. Tingnan ang Console (F12).',
+  network_failure: 'Hindi maabot ang server. Suriin kung naka-on ang WAMP.',
+  amount_invalid: 'Mali ang halaga.', item_required: 'Kailangan ang item.',
+  name_required: 'Kailangan ang pangalan.', quantity_invalid: 'Mali ang dami.',
+  report_heading: 'Ulat', report_intro: 'Buod ng benta at gastos sa napiling panahon.',
+  inventory_heading: 'Stock', inventory_intro: 'Tingnan, idagdag o ayusin ang mga produkto.',
+  inventory_link_receipt: '+ Kunan ng Resibo',
+  credit_heading: 'Mga May Utang', credit_intro: 'Tingnan ang utang at bayad ng bawat suki.',
+});
+Object.assign(LABELS.en, {
+  nav_home: 'Home', nav_entry: 'Quick Entry', nav_records: 'Records', nav_ubos: 'Stock', nav_ulat: 'Reports',
+  language: 'Language',
+  home_heading: 'Sales, expenses and stock', today_kicker: 'TODAY’S NET',
+  hero_note: 'Sales minus expenses, so you can see what remains.',
+  quick_kicker: 'QUICK ENTRY', quick_tag: 'Voice or text',
+  quick_title: 'Need to record something?', quick_desc: 'Sales, credit, payments or expenses—speak or type.',
+  quick_action: 'Create an entry',
+  receipt_link: 'Scan a Receipt', receipt_desc: 'Take a photo and review your expense.',
+  stock_kicker: 'INVENTORY', stock_title: 'Check your stock',
+  stock_desc: 'Products that are running low.', stock_left: 'left',
+  see_all: 'View all', stock_ok: 'Nothing needs restocking right now.',
+  stock_unavailable: 'Stock is unavailable.', loading_inventory: 'Loading inventory…',
+  recent_kicker: 'RECENT ENTRIES', recent_title: 'Recently recorded',
+  recent_desc: 'Transactions saved in your ledger.',
+  recent_empty: 'No entries yet today.', loading_records: 'Loading records…',
+  records_unavailable: 'Could not load records.', see_reports: 'View Reports',
+  units: 'items', entry_heading: 'Quick Entry', entry_title: 'Sale, credit, payment or expense?',
+  entry_desc: 'Tap the mic and speak, or type an entry below.',
+  entry_example: '“Sold two sardines fifty pesos.”',
+  type_ph: 'E.g. sold 2 sardines 50',
+  confirm_queue_link: 'Review entries',
+  records_heading: 'Records', records_intro: 'Sales, credit, payments and expenses in one place.',
+  records_empty: 'No entries in this category yet.', record_count: 'entries',
+  new_record: '+ New entry', balances_link: 'View customer balances',
+  saved_in_records: 'You can find it in your records.',
+  server_failure: 'Could not connect to database. Check .env, MySQL and tables.',
+  server_invalid: 'Invalid server response. Check the Console (F12).',
+  network_failure: 'Cannot reach the server. Check that WAMP is running.',
+  amount_invalid: 'Invalid amount.', item_required: 'Item is required.',
+  name_required: 'Name is required.', quantity_invalid: 'Invalid quantity.',
+  report_heading: 'Reports', report_intro: 'Sales and expenses for the selected period.',
+  inventory_heading: 'Stock', inventory_intro: 'View, add or update your products.',
+  inventory_link_receipt: '+ Scan Receipt',
+  credit_heading: 'Customer Balances', credit_intro: 'View credit and payments for each customer.',
+});
+
+Object.assign(LABELS.tl, {
+  confirm_kicker: 'SURIIN ANG NAUNAWAAN', inventory_products: 'MGA PRODUKTO',
+  receipt_heading: 'Kunan ng Resibo', receipt_intro: 'Itutok ang resibo sa camera at kunan ng larawan.',
+  receipt_step_camera: 'HAKBANG 1 · CAMERA', receipt_ready: 'Handa na',
+  receipt_aim: 'Itutok ang resibo', receipt_aim_desc: 'Siguruhing kita ang buong papel bago kumuha.',
+  receipt_placeholder: 'Handa para sa iyong resibo', receipt_placeholder_desc: 'Buksan ang camera para magsimula.',
+  receipt_open: 'Buksan ang Camera', receipt_take: 'Kunan ang Larawan',
+  receipt_upload: 'Mag-upload ng larawan', receipt_sample_use: 'Gamitin ang sample receipt',
+  receipt_how: 'MGA HAKBANG', receipt_guide_title: 'Resibo, gawing malinaw na tala',
+  receipt_guide_one: 'Buksan ang camera', receipt_guide_one_desc: 'Maaari ring mag-upload ng larawan.',
+  receipt_guide_two: 'Kunan ang resibo', receipt_guide_two_desc: 'Kuhanan ng larawan ang resibo.',
+  receipt_guide_three: 'Tingnan ang resulta', receipt_guide_three_desc: 'Suriin ang larawan at teksto.',
+  receipt_total_sample: 'KABUUANG GASTOS', receipt_total_desc: 'Halaga sa sample receipt',
+  receipt_loading: 'Inaayos ang larawan…', receipt_loading_desc: 'Inihahanda ang resibo.',
+  receipt_result_kicker: 'HAKBANG 2 · RESULTA', receipt_result_title: 'Narito ang iyong resibo!',
+  receipt_result_desc: 'Suriin ang larawan at ang sample na teksto.',
+  receipt_enhanced: 'Mas malinaw na larawan', receipt_enhanced_desc: 'Inayos ang contrast at liwanag.',
+  receipt_original: 'Tingnan ang orihinal', receipt_text_heading: 'Teksto ng Resibo',
+  receipt_text_note: 'Halimbawang teksto mula sa sample receipt.',
+  receipt_total: 'Kabuuang Gastos', receipt_sample: 'HALIMBAWA', receipt_save: 'I-save Bilang Gastos',
+  receipt_copy: 'Kopyahin ang Teksto', receipt_retake: 'Kunan Muli',
+  receipt_camera_open: 'Bukas ang camera', receipt_result_ready: 'Handa na ang resulta',
+  receipt_camera_missing: 'Hindi available ang camera. Mag-upload ng larawan.',
+  receipt_camera_failed: 'Hindi mabuksan ang camera. Puwedeng mag-upload ng larawan.',
+  receipt_no_image: 'Walang larawan mula sa camera. Subukan muli.',
+  receipt_canvas_failed: 'Hindi gumagana ang larawan sa browser.',
+  receipt_process_failed: 'Hindi ma-process ang larawan.',
+  receipt_camera_wait: 'Hintaying mag-load ang camera.',
+  receipt_invalid_file: 'Pumili ng image file.',
+  receipt_file_failed: 'Hindi mabasa ang larawan.',
+  receipt_sample_failed: 'Hindi ma-load ang sample.',
+  receipt_copy_success: 'Nakopya ang teksto.',
+  receipt_copy_failed: 'Hindi makopya. Puwedeng piliin ang teksto.',
+  receipt_saving: 'Sine-save ang gastos…', receipt_saved: 'Na-save bilang gastos. Tingnan sa Mga Tala.',
+  receipt_save_failed: 'Hindi na-save:', receipt_saved_button: 'Na-save na',
+});
+Object.assign(LABELS.en, {
+  confirm_kicker: 'REVIEW ENTRY', inventory_products: 'PRODUCTS',
+  receipt_heading: 'Scan Receipt', receipt_intro: 'Point the camera at the receipt and take a photo.',
+  receipt_step_camera: 'STEP 1 · CAMERA', receipt_ready: 'Ready',
+  receipt_aim: 'Position the receipt', receipt_aim_desc: 'Keep the entire receipt visible in the frame.',
+  receipt_placeholder: 'Ready for your receipt', receipt_placeholder_desc: 'Open the camera to begin.',
+  receipt_open: 'Open Camera', receipt_take: 'Take Photo',
+  receipt_upload: 'Upload a photo', receipt_sample_use: 'Use sample receipt',
+  receipt_how: 'HOW IT WORKS', receipt_guide_title: 'Turn receipts into records',
+  receipt_guide_one: 'Open camera', receipt_guide_one_desc: 'You can also upload a photo.',
+  receipt_guide_two: 'Capture receipt', receipt_guide_two_desc: 'Take a clear photo of the receipt.',
+  receipt_guide_three: 'Review results', receipt_guide_three_desc: 'Review the photo and text.',
+  receipt_total_sample: 'EXPENSE TOTAL', receipt_total_desc: 'Amount from sample receipt',
+  receipt_loading: 'Enhancing photo…', receipt_loading_desc: 'Preparing your receipt.',
+  receipt_result_kicker: 'STEP 2 · RESULT', receipt_result_title: 'Here is your receipt!',
+  receipt_result_desc: 'Review the photo and sample transcription.',
+  receipt_enhanced: 'Enhanced photo', receipt_enhanced_desc: 'Contrast and brightness adjusted.',
+  receipt_original: 'View original photo', receipt_text_heading: 'Receipt Text',
+  receipt_text_note: 'Sample transcription from the example receipt.',
+  receipt_total: 'Total Expenses', receipt_sample: 'SAMPLE', receipt_save: 'Save as Expense',
+  receipt_copy: 'Copy Text', receipt_retake: 'Retake Photo',
+  receipt_camera_open: 'Camera opened', receipt_result_ready: 'Result ready',
+  receipt_camera_missing: 'Camera not available. Upload a photo instead.',
+  receipt_camera_failed: 'Could not open camera. You can upload a photo.',
+  receipt_no_image: 'No photo received. Try again.',
+  receipt_canvas_failed: 'Image processing is unavailable in this browser.',
+  receipt_process_failed: 'Could not process photo.',
+  receipt_camera_wait: 'Wait for the camera to load.',
+  receipt_invalid_file: 'Choose an image file.',
+  receipt_file_failed: 'Could not read photo.',
+  receipt_sample_failed: 'Could not load sample.',
+  receipt_copy_success: 'Text copied.',
+  receipt_copy_failed: 'Could not copy. You can select the text.',
+  receipt_saving: 'Saving expense…', receipt_saved: 'Saved as expense. View in Records.',
+  receipt_save_failed: 'Not saved:', receipt_saved_button: 'Saved',
+});
+
+// WAMP setup feedback: codes are safe to display, never expose SQL details.
+Object.assign(LABELS.tl, {
+  api_DB_CONFIG_MISSING: 'Walang .env file. Patakbuhin ang setup-local-wamp.bat sa project folder.',
+  api_DB_CONFIG_INVALID: 'May kulang sa .env. Suriin ang DB_HOST, DB_NAME, DB_USER at DB_PASS.',
+  api_DB_DRIVER_MISSING: 'Hindi enabled ang pdo_mysql extension sa WAMP PHP.',
+  api_DB_CONNECT_FAILED: 'Hindi makakonekta sa MySQL. Suriin ang WAMP, port, at login sa .env.',
+  api_DB_DATABASE_MISSING: 'Wala ang database. I-import ang database/schema.sql sa phpMyAdmin.',
+  api_DB_SCHEMA_MISSING: 'May kulang na table o column. Suriin ang schema at mga migration.',
+  api_PHP_MBSTRING_MISSING: 'Hindi enabled ang mbstring extension sa WAMP PHP.',
+  api_SERVER_ERROR: 'May server error. Tingnan ang PHP error log sa WAMP.',
+});
+Object.assign(LABELS.en, {
+  api_DB_CONFIG_MISSING: 'Missing .env file. Run setup-local-wamp.bat in the project folder.',
+  api_DB_CONFIG_INVALID: 'Incomplete .env. Check DB_HOST, DB_NAME, DB_USER and DB_PASS.',
+  api_DB_DRIVER_MISSING: 'The pdo_mysql extension is disabled in WAMP PHP.',
+  api_DB_CONNECT_FAILED: 'Cannot connect to MySQL. Check WAMP, port and .env credentials.',
+  api_DB_DATABASE_MISSING: 'Database not found. Import database/schema.sql in phpMyAdmin.',
+  api_DB_SCHEMA_MISSING: 'Database table or column is missing. Check schema and migrations.',
+  api_PHP_MBSTRING_MISSING: 'The mbstring extension is disabled in WAMP PHP.',
+  api_SERVER_ERROR: 'Server error. Check the PHP error log in WAMP.',
+});
+
 let lang = localStorage.getItem("kk-lang") || "tl";
 if (!LABELS[lang]) lang = "tl";
 
-function t(key) {
-  return LABELS[lang][key] || LABELS.tl[key] || key;
+function t(key, values = {}) {
+  let label = LABELS[lang][key] || LABELS.tl[key] || key;
+  for (const [name, value] of Object.entries(values)) {
+    label = label.replaceAll('{' + name + '}', String(value));
+  }
+  return label;
 }
 
 // 8550 -> "₱85.50"
@@ -215,14 +393,6 @@ function applyLabels() {
   document.querySelectorAll("[data-label-ph]").forEach((el) => {
     el.placeholder = t(el.dataset.labelPh);
   });
-  const picker = document.getElementById("lang");
-  if (picker) {
-    picker.value = lang;
-    picker.onchange = () => {
-      localStorage.setItem("kk-lang", picker.value);
-      location.reload();
-    };
-  }
 }
 
 document.addEventListener("DOMContentLoaded", applyLabels);

@@ -3,16 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#1f7a4d">
+  <meta name="theme-color" content="#0E7A55">
   <title>Utang – KitaKlaro</title>
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" href="./icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=DM+Sans:opsz,wght@9..40,400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/desktop.css">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="KitaKlaro">
+  <link rel="stylesheet" href="./css/pwa.css">
+  <script src="./js/pwa.js"></script>
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
 </head>
 <body>
   <script src="./js/nav.js"></script>
   <main>
-    <h2 data-label="utang_title"></h2>
+    <header class="page-heading"><div><h1 data-label="credit_heading"></h1><p class="page-subtitle" data-label="credit_intro"></p></div></header>
     <p id="message" class="message" role="status"></p>
     <ul id="utang-list" class="list"></ul>
   </main>
@@ -30,6 +39,6 @@
   <script src="./js/labels.js"></script>
   <script src="./js/api.js"></script>
   <script src="./js/utang.js"></script>
-  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
+  
 </body>
 </html>

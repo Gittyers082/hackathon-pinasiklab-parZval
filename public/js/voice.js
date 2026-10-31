@@ -19,7 +19,7 @@ function setupMicVisibility(micButton) {
 // (e.g. 'not-allowed' = mic blocked, 'network' = no internet), onEnd() when listening stops.
 function listenOnce(onText, onEnd, onError) {
   const rec = new SpeechRec();
-  rec.lang = 'fil-PH';
+  rec.lang = (typeof lang !== 'undefined' && lang === 'en') ? 'en-PH' : 'fil-PH';
   rec.interimResults = false;
   rec.maxAlternatives = 1;
   rec.onresult = event => onText(event.results[0][0].transcript);
